@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VestraMail Pro</title>
+<meta name="description" content="System zarządzania korespondencją Vestra Care">
+<meta name="theme-color" content="#0f1117">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VestraMail">
+<link rel="manifest" href="data:application/json,{
+  %22name%22:%22VestraMail Pro%22,
+  %22short_name%22:%22VestraMail%22,
+  %22description%22:%22System zarz%C4%85dzania korespondencj%C4%85 Vestra Care%22,
+  %22start_url%22:%22.%22,
+  %22display%22:%22standalone%22,
+  %22background_color%22:%22%230f1117%22,
+  %22theme_color%22:%22%234f7aff%22,
+  %22orientation%22:%22landscape%22,
+  %22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%230f1117'/%3E%3Crect x='80' y='160' width='352' height='240' rx='16' fill='none' stroke='%234f7aff' stroke-width='24'/%3E%3Cpath d='M80 192 L256 304 L432 192' fill='none' stroke='%234f7aff' stroke-width='24'/%3E%3Ccircle cx='390' cy='140' r='60' fill='%2322c55e'/%3E%3Cpath d='M365 140 L383 158 L415 126' fill='none' stroke='white' stroke-width='12' stroke-linecap='round'/%3E%3C/svg%3E%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22any maskable%22}]
+}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#0f1117;--surface:#1a1d27;--surface2:#22263a;--border:#2e3350;--accent:#4f7aff;--accent2:#7c5cfc;--green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--orange:#f97316;--text:#e8eaf6;--muted:#7b82a8;--font:'Segoe UI',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
+header{background:linear-gradient(135deg,#1a1d27,#16192a);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.logo{font-size:19px;font-weight:700}.logo span{color:var(--accent)}
+.badge{color:#fff;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;background:var(--accent)}
+.badge.green{background:var(--green)}
+.hbtn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-family:var(--font);transition:all .2s;display:flex;align-items:center;gap:6px}
+.hbtn:hover{border-color:var(--accent);color:var(--accent)}
+.ml{margin-left:auto}.last-update{font-size:12px;color:var(--muted)}
+.tabs{display:flex;gap:4px;padding:16px 24px 0;border-bottom:1px solid var(--border);background:var(--surface);overflow-x:auto}
+.tab{padding:10px 16px;border-radius:8px 8px 0 0;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);border:1px solid transparent;border-bottom:none;transition:all .2s;white-space:nowrap}
+.tab:hover{color:var(--text);background:var(--surface2)}.tab.active{color:var(--text);background:var(--bg);border-color:var(--border)}
+.content{padding:24px;max-width:1400px;margin:0 auto}.panel{display:none}.panel.active{display:block}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.blue::before{background:var(--accent)}.stat-card.green::before{background:var(--green)}
+.stat-card.red::before{background:var(--red)}.stat-card.yellow::before{background:var(--yellow)}
+.stat-card.purple::before{background:var(--accent2)}.stat-card.orange::before{background:var(--orange)}
+.stat-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.stat-value{font-size:28px;font-weight:700;letter-spacing:-1px}.stat-sub{font-size:12px;color:var(--muted);margin-top:4px}
+.chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px}
+.chart-title{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px}
+.bar-chart{display:flex;align-items:flex-end;gap:5px;height:120px}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.bar{width:100%;border-radius:4px 4px 0 0;min-height:3px}
+.bar.up{background:linear-gradient(180deg,var(--green),#16a34a)}
+.bar.down{background:linear-gradient(180deg,var(--red),#b91c1c)}
+.bar.neutral{background:linear-gradient(180deg,var(--accent),var(--accent2))}
+.bar-label{font-size:9px;color:var(--muted);text-align:center;white-space:nowrap}.bar-val{font-size:9px;color:var(--text);font-weight:600}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+@media(max-width:768px){.two-col{grid-template-columns:1fr}}
+.sheet-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.sheet-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+.sheet-name{font-size:13px}.sheet-count{background:var(--surface2);padding:3px 10px;border-radius:20px;font-size:13px;font-weight:700;color:var(--accent)}
+.filter-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;align-items:flex-end}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.si{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;min-width:140px}
+.si:focus{border-color:var(--accent)}.si::placeholder{color:var(--muted)}
+select.si{cursor:pointer}
+.btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);white-space:nowrap}
+.btn:hover{opacity:.85}.btn.sec{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn.gbtn{background:var(--green)}
+.saved-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.saved-tag{background:var(--surface2);border:1px solid var(--accent);color:var(--accent);border-radius:20px;padding:4px 12px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.saved-tag:hover{background:var(--accent);color:#fff}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--surface2);padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}tr:hover td{background:var(--surface2)}
+.pill{display:inline-block;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600}
+.pill-blue{background:rgba(79,122,255,.15);color:var(--accent)}.pill-red{background:rgba(239,68,68,.15);color:var(--red)}
+.pill-green{background:rgba(34,197,94,.15);color:var(--green)}
+.truncate{max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ci{font-size:13px;color:var(--muted);margin-bottom:10px}
+.tlink{color:var(--accent);text-decoration:none;font-family:monospace;font-size:12px}
+.tlink:hover{text-decoration:underline}
+.tlink-red{color:var(--red);text-decoration:none;font-family:monospace;font-size:12px}
+.tlink-red:hover{text-decoration:underline}
+.new-row td{background:rgba(34,197,94,.05)!important;border-left:3px solid var(--green)}
+.info-box{background:rgba(79,122,255,.08);border:1px solid rgba(79,122,255,.2);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--muted);line-height:1.5}
+.info-box strong{color:var(--text)}.info-box.g{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.2)}
+.chat-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;height:560px}
+.chat-msgs{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
+.mu{align-self:flex-end;max-width:80%}.ma{align-self:flex-start;max-width:85%}
+.ml2{font-size:11px;color:var(--muted);margin-bottom:3px}.mu .ml2{text-align:right}
+.bu{padding:11px 15px;border-radius:14px 14px 4px 14px;font-size:14px;line-height:1.5;background:var(--accent);color:#fff}
+.ba{padding:11px 15px;border-radius:14px 14px 14px 4px;font-size:14px;line-height:1.5;background:var(--surface2);border:1px solid var(--border)}
+.sw{display:flex;flex-wrap:wrap;gap:7px;padding:0 20px 14px}
+.sg{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--text)}
+.sg:hover{border-color:var(--accent);color:var(--accent)}
+.ci-wrap{padding:14px;border-top:1px solid var(--border);display:flex;gap:10px}
+.ci-ta{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 13px;color:var(--text);font-size:14px;font-family:var(--font);outline:none;resize:none;height:42px}
+.ci-ta:focus{border-color:var(--accent)}
+.ls{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:100}
+.lt{font-size:22px;font-weight:700}.lt span{color:var(--accent)}
+.pw{width:300px;background:var(--surface2);border-radius:20px;height:7px;overflow:hidden}
+.pb{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:20px;transition:width .4s;width:0%}
+.lstat{font-size:13px;color:var(--muted)}
+.city-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.city-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--green);color:#fff;padding:11px 18px;border-radius:10px;font-size:14px;font-weight:500;z-index:999;opacity:0;transform:translateY(16px);transition:all .3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.empty{text-align:center;padding:40px;color:var(--muted);font-size:14px}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+@keyframes spin{to{transform:rotate(360deg)}}.spin{animation:spin .7s linear infinite;display:inline-block}
+.dot{width:8px;height:8px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+.typing{display:flex;gap:4px}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<!-- LOADING -->
+<div class="ls" id="ls">
+  <div class="lt">Vestra Care <span>Poczta PRO</span></div>
+  <div class="pw"><div class="pb" id="pb"></div></div>
+  <div class="lstat" id="lstat">Łączenie z Google Sheets...</div>
+</div>
+
+<!-- APP -->
+<div id="key-dialog" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;align-items:center;justify-content:center">
+  <div style="background:#1a1d27;border:1px solid #2e3350;border-radius:16px;padding:28px;width:440px;max-width:90vw">
+    <div style="font-size:17px;font-weight:600;margin-bottom:8px">🔑 Klucz API Gemini</div>
+    <div style="font-size:13px;color:#7b82a8;margin-bottom:20px;line-height:1.5">
+      Potrzebny do Agenta AI. Pobierz na <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#4f7aff">aistudio.google.com/apikey</a>.<br>
+      Klucz jest zapisywany tylko na Twoim urządzeniu.
+    </div>
+    <input type="password" id="gem-key-input" placeholder="AIza..." 
+      style="width:100%;background:#0f1117;border:1px solid #2e3350;border-radius:8px;padding:11px 14px;color:#e8eaf6;font-size:14px;font-family:inherit;outline:none;margin-bottom:16px;box-sizing:border-box">
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button onclick="closeKeyDialog()" style="background:#22263a;border:1px solid #2e3350;color:#e8eaf6;padding:9px 16px;border-radius:8px;cursor:pointer;font-family:inherit">Pomiń</button>
+      <button onclick="saveGemKey()" style="background:#4f7aff;border:none;color:#fff;padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:600;font-family:inherit">Zapisz</button>
+    </div>
+  </div>
+</div>
+<div id="app" style="display:none">
+<header>
+  <div class="logo">Vestra Care <span>Poczta PRO</span></div>
+  <div class="badge green">🟢 Live</div>
+  <div class="badge" id="tbadge">...</div>
+  <div class="last-update" id="lupdate"></div>
+  <button class="hbtn" onclick="refreshData()"><span id="ri">🔄</span> Odśwież</button>
+  <button class="hbtn" onclick="exportAll()">📤 Excel</button>
+  <button class="hbtn ml" onclick="genPDF()">📄 Raport PDF</button>
+  <button class="hbtn" onclick="showKeyDialog()" style="border-color:var(--yellow);color:var(--yellow)" title="Ustaw klucz API Gemini">🔑 API</button>
+  <button class="hbtn" onclick="installPWA()" title="Zainstaluj jako aplikację" style="border-color:var(--green);color:var(--green)">📲 Zainstaluj</button>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('dash',this)">📊 Dashboard</div>
+  <div class="tab" onclick="showTab('search',this)">🔍 Wyszukiwarka</div>
+  <div class="tab" onclick="showTab('scan',this)" style="border-color:var(--green);color:var(--green)">📷 Skanuj</div>
+  <div class="tab" onclick="showTab('today',this)">📅 Dzisiaj</div>
+  <div class="tab" onclick="showTab('analysis',this)">📈 Analizy</div>
+  <div class="tab" onclick="showTab('cities',this)">🗺️ Miejscowości</div>
+  <div class="tab" onclick="showTab('alerts',this)">🚨 Alerty</div>
+  <div class="tab" onclick="showTab('dups',this)">⚠️ Duplikaty</div>
+  <div class="tab" onclick="showTab('agent',this)">🤖 Agent AI</div>
+</div>
+
+<div class="content">
+
+<!-- DASHBOARD -->
+<div id="panel-dash" class="panel active">
+  <div class="stats-grid" id="sgrid"></div>
+  <div class="two-col">
+    <div class="chart-wrap"><div class="chart-title">Przesyłki miesięcznie</div><div class="bar-chart" id="mchart"></div></div>
+    <div class="chart-wrap"><div class="chart-title">Porównanie miesięcy (m/m)</div><div id="mcompare"></div></div>
+  </div>
+  <div class="chart-wrap"><div class="chart-title">Przesyłki wg arkusza</div><div class="sheet-grid" id="sheetgrid"></div></div>
+</div>
+
+<!-- SEARCH -->
+<div id="panel-search" class="panel">
+  <div class="saved-wrap" id="saved-wrap"></div>
+  <div class="filter-row">
+    <div class="fg"><div class="fl">Szukaj</div><input type="text" class="si" id="sq" placeholder="Nazwisko, numer, miejscowość..." onkeydown="if(event.key==='Enter')doSearch()" style="min-width:220px"></div>
+    <div class="fg"><div class="fl">Arkusz</div><select class="si" id="ss"></select></div>
+    <div class="fg"><div class="fl">Data od</div><input type="date" class="si" id="sdf"></div>
+    <div class="fg"><div class="fl">Data do</div><input type="date" class="si" id="sdt"></div>
+    <div class="fg"><div class="fl">Typ pisma</div><select class="si" id="st"><option value="">Wszystkie</option></select></div>
+    <div style="display:flex;gap:6px">
+      <button class="btn" onclick="doSearch()">Szukaj</button>
+      <button class="btn sec" onclick="clearSearch()">Wyczyść</button>
+      <button class="btn sec" onclick="saveSearch()" title="Zapisz">⭐</button>
+    </div>
+  </div>
+  <div class="ci" id="scount"></div>
+  <div id="sexport" style="margin-bottom:10px;display:none"><button class="btn gbtn" onclick="exportResults()">📤 Eksportuj do Excel</button></div>
+  <div class="table-wrap" id="sresults"><div class="empty">Ustaw filtry i kliknij Szukaj</div></div>
+</div>
+
+<!-- DZISIAJ -->
+<div id="panel-today" class="panel">
+  <div class="info-box g"><strong>📅 Dziennik nadań</strong> — przesyłki z wybranego dnia. Nowe (dzisiejsze) podświetlone na zielono.</div>
+  <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <input type="date" class="si" id="tdate" style="max-width:170px">
+    <button class="btn" onclick="loadToday()">Pokaż</button>
+    <button class="btn sec" onclick="document.getElementById('tdate').value=todayStr();loadToday()">Dziś</button>
+    <button class="btn gbtn" onclick="exportToday()">📤 Eksport</button>
+  </div>
+  <div class="ci" id="tcount"></div>
+  <div class="table-wrap" id="tresults"><div class="empty">Wybierz datę i kliknij Pokaż</div></div>
+</div>
+
+<!-- ANALIZY -->
+<div id="panel-analysis" class="panel">
+  <div class="stats-grid" id="astats"></div>
+  <div class="two-col">
+    <div class="chart-wrap"><div class="chart-title">Trend tygodniowy (ostatnie 12 tyg.)</div><div class="bar-chart" id="wchart"></div></div>
+    <div class="chart-wrap"><div class="chart-title">Top 10 typów pism</div><div id="tchart" style="margin-top:6px"></div></div>
+  </div>
+  <div class="chart-wrap"><div class="chart-title">Rok do roku (YoY)</div><div id="yoychart" style="margin-top:6px"></div></div>
+</div>
+
+<!-- MIEJSCOWOŚCI -->
+<div id="panel-cities" class="panel">
+  <div class="two-col">
+    <div class="chart-wrap"><div class="chart-title">Rozkład wg województw</div><div id="voiv-list" style="margin-top:6px"></div></div>
+    <div class="chart-wrap"><div class="chart-title">Udział % województw</div><div id="voiv-pct" style="margin-top:6px"></div></div>
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-title">Top miejscowości</div>
+    <div style="display:flex;gap:10px;margin-bottom:12px"><input type="text" class="si" id="cityq" placeholder="Szukaj miejscowości..." oninput="filterCities()" style="flex:1"></div>
+    <div class="ci" id="citycount"></div>
+    <div class="city-grid" id="citylist"></div>
+  </div>
+</div>
+
+<!-- ALERTY -->
+<div id="panel-alerts" class="panel">
+  <div class="info-box"><strong>🚨 Centrum alertów</strong> — automatyczne wykrywanie problemów i anomalii w danych.</div>
+  <div id="alerts-content"></div>
+</div>
+
+<!-- SKANUJ -->
+<div id="panel-scan" class="panel">
+  <div class="info-box g">
+    <strong>📷 Skanowanie przesyłek</strong> — kliknij w pole "Numer przesyłki", zeskanuj kod z znaczka Envelo, uzupełnij dane i kliknij Dodaj. Rekord trafi bezpośrednio do Google Sheets!
+  </div>
+
+  <!-- SCAN INPUT -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px">
+    <div style="font-size:16px;font-weight:600;margin-bottom:20px;display:flex;align-items:center;gap:10px">
+      <span style="background:var(--green);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px">1</span>
+      Zeskanuj kod przesyłki
+    </div>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <div style="flex:1;min-width:280px">
+        <div class="fl" style="margin-bottom:6px">Numer przesyłki (skaner wpisze automatycznie)</div>
+        <input type="text" id="scan-numer" class="si" placeholder="Zeskanuj lub wpisz numer..." 
+          style="width:100%;font-family:monospace;font-size:15px;padding:12px 16px;border-color:var(--green)"
+          oninput="checkDuplicate()" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('scan-tytul').focus()}"
+          autofocus>
+      </div>
+      <div id="dup-warning" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);max-width:300px">
+        ⚠️ <strong>Uwaga!</strong> Ten numer już istnieje w bazie!<br>
+        <span id="dup-detail" style="font-size:12px"></span>
+      </div>
+      <div id="ok-sign" style="display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--green)">
+        ✅ Nowy numer — gotowy do dodania
+      </div>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px">
+    <div style="font-size:16px;font-weight:600;margin-bottom:20px;display:flex;align-items:center;gap:10px">
+      <span style="background:var(--accent);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px">2</span>
+      Uzupełnij dane przesyłki
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="fg">
+        <div class="fl">Arkusz (typ przesyłki) *</div>
+        <select class="si" id="scan-arkusz" style="width:100%"></select>
+      </div>
+      <div class="fg">
+        <div class="fl">Tytuł pisma *</div>
+        <select class="si" id="scan-tytul" style="width:100%"></select>
+      </div>
+      <div class="fg" style="grid-column:1/-1">
+        <div class="fl">Adresat *</div>
+        <input type="text" class="si" id="scan-adresat" list="dl-adresat"
+          placeholder="Imię Nazwisko, ul. Przykładowa 1; 00-000 Miasto" style="width:100%"
+          onkeydown="if(event.key==='Enter')document.getElementById('scan-nadawca').focus()">
+        <datalist id="dl-adresat"></datalist>
+      </div>
+      <div class="fg" style="grid-column:1/-1">
+        <div class="fl">Nadawca</div>
+        <input type="text" class="si" id="scan-nadawca" list="dl-nadawca"
+          placeholder="VESTRA CARE UL. DWORCOWA 12; 84-300 LĘBORK" style="width:100%"
+          onkeydown="if(event.key==='Enter')document.getElementById('scan-klient').focus()">
+        <datalist id="dl-nadawca"></datalist>
+      </div>
+      <div class="fg">
+        <div class="fl">Klient</div>
+        <input type="text" class="si" id="scan-klient" list="dl-klient"
+          placeholder="Imię i Nazwisko klienta" style="width:100%"
+          onkeydown="if(event.key==='Enter')document.getElementById('scan-data').focus()">
+        <datalist id="dl-klient"></datalist>
+      </div>
+      <div class="fg">
+        <div class="fl">Data nadania</div>
+        <input type="date" class="si" id="scan-data" style="width:100%">
+      </div>
+    </div>
+  </div>
+
+  <!-- BUTTONS -->
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <button class="btn" style="background:var(--green);font-size:15px;padding:14px 28px" onclick="addRecord()">
+      ✅ Dodaj przesyłkę do Google Sheets
+    </button>
+    <button class="btn sec" onclick="clearScanForm()">🗑️ Wyczyść formularz</button>
+    <div id="scan-status" style="font-size:13px;color:var(--muted)"></div>
+  </div>
+
+  <!-- RECENTLY ADDED -->
+  <div style="margin-top:28px">
+    <div style="font-size:14px;font-weight:600;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px">
+      📋 Ostatnio dodane w tej sesji
+    </div>
+    <div class="table-wrap" id="scan-history">
+      <div class="empty">Jeszcze nic nie dodano w tej sesji</div>
+    </div>
+  </div>
+</div>
+
+<!-- DUPLIKATY -->
+<div id="panel-dups" class="panel">
+  <div class="info-box"><strong>⚠️ Duplikaty</strong> — numery przesyłek pojawiające się więcej niż raz.</div>
+  <div style="display:flex;gap:10px;margin-bottom:12px">
+    <input type="text" class="si" id="dq" placeholder="Szukaj w duplikatach..." oninput="filterDups()" style="flex:1">
+    <button class="btn sec" onclick="document.getElementById('dq').value='';filterDups()">Wyczyść</button>
+    <button class="btn gbtn" onclick="exportDups()">📤 Eksport</button>
+  </div>
+  <div class="ci" id="dcount"></div>
+  <div class="table-wrap" id="dtable"><div class="empty">Ładowanie...</div></div>
+</div>
+
+<!-- AGENT AI -->
+<div id="panel-agent" class="panel">
+  <div class="info-box"><strong>🤖 Agent AI (Gemini 2.5 Flash)</strong> — analizuje dane, pisze pisma urzędowe, generuje raporty. 250 zapytań/dzień za darmo.</div>
+  <div class="chat-wrap">
+    <div class="chat-msgs" id="cmsgs">
+      <div class="ma"><div class="ml2">🤖 Agent AI</div><div class="ba" id="wmsg">Ładowanie danych...</div></div>
+    </div>
+    <div class="sw" id="sw">
+      <div class="sg" onclick="sendSugg(this)">Ile przesyłek wysłano w czerwcu?</div>
+      <div class="sg" onclick="sendSugg(this)">Zrób raport miesięczny</div>
+      <div class="sg" onclick="sendSugg(this)">Napisz ponaglenie dla klienta</div>
+      <div class="sg" onclick="sendSugg(this)">Jakie są trendy w wysyłkach?</div>
+      <div class="sg" onclick="sendSugg(this)">Wykryj anomalie w danych</div>
+    </div>
+    <div class="ci-wrap">
+      <textarea id="ci" class="ci-ta" placeholder="Zadaj pytanie..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
+      <button class="btn" id="sbtn" onclick="sendChat()">Wyślij</button>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+// CONFIG
+const API='https://script.google.com/macros/s/AKfycbwE3h0wxJjhWHwsb6-XbwuPX4le61gntX6u99riH7b4R0to48uN39dbgoqXFN1ystog/exec';
+const TRACK='https://emonitoring.poczta-polska.pl/?numer=';
+const GEM_KEY=localStorage.getItem('gemini_key')||'';
+let GEM_URL_CURRENT='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+(localStorage.getItem('gemini_key')||'');
+const GEM_URL=null; // Use GEM_URL_CURRENT instead
+
+// STATE
+let recs=[],dups=[],chatH=[],agentCtx='',savedSearches=[],curResults=[];
+let allCities=[];
+
+// HELPERS
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const todayStr=()=>{
+  const d=new Date();
+  const y=d.getFullYear();
+  const m=String(d.getMonth()+1).padStart(2,'0');
+  const day=String(d.getDate()).padStart(2,'0');
+  return y+'-'+m+'-'+day;
+};
+const toast=(m,c='var(--green)')=>{const t=document.getElementById('toast');t.textContent=m;t.style.background=c;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);};
+const setP=(p,s)=>{document.getElementById('pb').style.width=p+'%';document.getElementById('lstat').textContent=s;};
+
+function parseDate(v){
+  if(!v)return'';v=String(v).trim();
+  if(/^\d{2}\.\d{2}\.\d{4}$/.test(v)){const[d,m,y]=v.split('.');return y+'-'+m+'-'+d;}
+  if(/^\d{4}-\d{2}-\d{2}/.test(v))return v.slice(0,10);
+  const n=parseFloat(v);
+  if(!isNaN(n)&&n>40000&&n<60000){const d=new Date((n-25569)*86400000);return d.toISOString().slice(0,10);}
+  return v.slice(0,10)||'';
+}
+
+// LOAD DATA - exact copy from working LIVE version
+async function loadData(){
+  try{
+    setP(10,'Łączenie z Google Sheets...');
+    const res=await fetch(API);
+    setP(40,'Pobieranie danych...');
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    setP(70,'Przetwarzanie rekordów...');
+    recs=[];
+    for(const[sheet,rows]of Object.entries(data)){
+      if(!rows||rows.length<2)continue;
+      const headers=rows[0].map(h=>String(h||'').toUpperCase().trim());
+      const ci=kw=>headers.findIndex(h=>h.includes(kw));
+      const cN=ci('NUMER'),cT=ci('TYT'),cA=ci('ADRESAT'),cD=ci('DATA'),cS=ci('STATUS'),cNad=ci('NADAWCA'),cK=ci('KLIENT');
+      for(let i=1;i<rows.length;i++){
+        const r=rows[i];
+        const g=idx=>idx>=0?String(r[idx]||'').trim():'';
+        const numer=g(cN);
+        if(!numer||numer.toUpperCase()==='NUMER PRZESYŁKI')continue;
+        recs.push({arkusz:sheet,numer,tytul:g(cT),adresat:g(cA),nadawca:g(cNad),klient:g(cK),data:parseDate(g(cD)),status:g(cS)});
+      }
+    }
+    setP(85,'Wykrywanie duplikatów...');
+    detectDups();
+    setP(95,'Budowanie widoków...');
+    buildCtx();
+    setP(100,'Gotowe!');
+    await new Promise(r=>setTimeout(r,300));
+    document.getElementById('ls').style.display='none';
+    document.getElementById('app').style.display='block';
+    renderAll();
+    loadSaved();
+  }catch(e){
+    setP(100,'❌ Błąd: '+e.message);
+    document.getElementById('pb').style.background='var(--red)';
+    console.error('loadData error:',e);
+  }
+}
+
+function detectDups(){
+  const cnt={};
+  recs.forEach(r=>{const n=r.numer;if(n&&n!=='X'&&n.length>5)cnt[n]=(cnt[n]||0)+1;});
+  const ds=new Set(Object.keys(cnt).filter(k=>cnt[k]>1));
+  dups=recs.filter(r=>ds.has(r.numer));
+}
+
+async function refreshData(){
+  const ri=document.getElementById('ri');ri.className='spin';
+  try{
+    const res=await fetch(API);
+    const data=await res.json();
+    recs=[];
+    for(const[sheet,rows]of Object.entries(data)){
+      if(!rows||rows.length<2)continue;
+      const headers=rows[0].map(h=>String(h||'').toUpperCase().trim());
+      const ci=kw=>headers.findIndex(h=>h.includes(kw));
+      const cN=ci('NUMER'),cT=ci('TYT'),cA=ci('ADRESAT'),cD=ci('DATA'),cS=ci('STATUS'),cNad=ci('NADAWCA'),cK=ci('KLIENT');
+      for(let i=1;i<rows.length;i++){
+        const r=rows[i];const g=idx=>idx>=0?String(r[idx]||'').trim():'';
+        const numer=g(cN);if(!numer)continue;
+        recs.push({arkusz:sheet,numer,tytul:g(cT),adresat:g(cA),nadawca:g(cNad),klient:g(cK),data:parseDate(g(cD)),status:g(cS)});
+      }
+    }
+    detectDups();buildCtx();renderAll();
+    toast('✅ Odświeżono — '+recs.length.toLocaleString('pl')+' rekordów');
+  }catch(e){toast('❌ '+e.message,'var(--red)');}
+  ri.className='';
+}
+
+// RENDER ALL
+function renderAll(){
+  document.getElementById('tbadge').textContent=recs.length.toLocaleString('pl')+' rekordów';
+  document.getElementById('lupdate').textContent='🕐 '+new Date().toLocaleTimeString('pl-PL');
+  renderStats();renderChart();renderSheets();
+  renderSheetFilter();renderTitleFilter();
+  renderDupTable();renderAlerts();renderCities();renderAnalysis();
+  initAutocomplete();
+}
+
+function getByMonth(){
+  const m={};recs.forEach(r=>{const mo=r.data?r.data.slice(0,7):null;if(mo)m[mo]=(m[mo]||0)+1;});
+  return Object.entries(m).sort((a,b)=>a[0].localeCompare(b[0]));
+}
+
+function renderStats(){
+  const bySheet={};recs.forEach(r=>{bySheet[r.arkusz]=(bySheet[r.arkusz]||0)+1;});
+  const months=getByMonth();
+  const dupCnt=new Set(dups.map(r=>r.numer)).size;
+  const best=months.reduce((a,b)=>b[1]>a[1]?b:a,['?',0]);
+  const last2=months.slice(-2);
+  const trend=last2.length===2?Math.round((last2[1][1]-last2[0][1])/last2[0][1]*100):0;
+  const trendHtml=trend>=0?`<span style="color:var(--green)">▲ ${trend}%</span>`:`<span style="color:var(--red)">▼ ${Math.abs(trend)}%</span>`;
+  const todayN=recs.filter(r=>r.data===todayStr()).length;
+  document.getElementById('sgrid').innerHTML=`
+    <div class="stat-card blue"><div class="stat-label">Wszystkich</div><div class="stat-value">${recs.length.toLocaleString('pl')}</div><div class="stat-sub">Wszystkie arkusze</div></div>
+    <div class="stat-card green"><div class="stat-label">Najaktywniejszy</div><div class="stat-value">${best[1].toLocaleString('pl')}</div><div class="stat-sub">${best[0]}</div></div>
+    <div class="stat-card orange"><div class="stat-label">Dzisiaj</div><div class="stat-value">${todayN.toLocaleString('pl')}</div><div class="stat-sub">${todayStr()}</div></div>
+    <div class="stat-card red"><div class="stat-label">Duplikaty</div><div class="stat-value">${dupCnt.toLocaleString('pl')}</div><div class="stat-sub">Do weryfikacji</div></div>
+    <div class="stat-card yellow"><div class="stat-label">Arkusze</div><div class="stat-value">${Object.keys(bySheet).length}</div><div class="stat-sub">Typy przesyłek</div></div>
+    <div class="stat-card purple"><div class="stat-label">Trend m/m</div><div class="stat-value" style="font-size:20px">${trendHtml}</div><div class="stat-sub">vs poprzedni miesiąc</div></div>`;
+}
+
+function renderChart(){
+  const months=getByMonth();
+  const max=Math.max(...months.map(x=>x[1]),1);
+  document.getElementById('mchart').innerHTML=months.map(([m,v],i)=>{
+    const prev=i>0?months[i-1][1]:v;
+    const cls=v>prev?'up':v<prev?'down':'neutral';
+    return`<div class="bar-wrap" title="${m}: ${v.toLocaleString('pl')}">
+      <div class="bar-val">${v>=1000?(v/1000).toFixed(1)+'k':v}</div>
+      <div class="bar ${cls}" style="height:${Math.max((v/max)*100,3)}%"></div>
+      <div class="bar-label">${m.slice(2).replace('-','/')}</div>
+    </div>`;
+  }).join('');
+  // Month compare
+  const last=months.slice(-6);
+  document.getElementById('mcompare').innerHTML='<div style="display:flex;flex-direction:column;gap:7px">'+last.slice(1).map(([m,v],i)=>{
+    const pv=last[i][1];const diff=v-pv;const pct=pv>0?Math.round(diff/pv*100):0;
+    const col=diff>=0?'var(--green)':'var(--red)';
+    return`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface2);border-radius:8px">
+      <span style="font-size:13px">${m}</span>
+      <span style="font-size:13px;font-weight:600">${v.toLocaleString('pl')}</span>
+      <span style="font-size:12px;color:${col};font-weight:600">${diff>=0?'▲':'▼'} ${Math.abs(pct)}% (${diff>=0?'+':''}${diff.toLocaleString('pl')})</span>
+    </div>`;
+  }).join('')+'</div>';
+}
+
+function renderSheets(){
+  const bs={};recs.forEach(r=>{bs[r.arkusz]=(bs[r.arkusz]||0)+1;});
+  document.getElementById('sheetgrid').innerHTML=Object.entries(bs).sort((a,b)=>b[1]-a[1])
+    .map(([n,c])=>`<div class="sheet-card"><div class="sheet-name">${esc(n)}</div><div class="sheet-count">${c.toLocaleString('pl')}</div></div>`).join('');
+}
+
+function renderSheetFilter(){
+  const sheets=[...new Set(recs.map(r=>r.arkusz))];
+  document.getElementById('ss').innerHTML='<option value="">Wszystkie arkusze</option>'+sheets.map(a=>`<option>${a}</option>`).join('');
+}
+
+function renderTitleFilter(){
+  const titles=[...new Set(recs.map(r=>r.tytul).filter(Boolean))].sort();
+  document.getElementById('st').innerHTML='<option value="">Wszystkie typy</option>'+titles.map(t=>`<option>${esc(t)}</option>`).join('');
+}
+
+// TRACKING LINK
+function tlink(n,cls='tlink'){
+  if(!n||n==='X'||n.length<5)return`<span style="font-family:monospace;font-size:12px">${esc(n)}</span>`;
+  return`<a href="${TRACK}${esc(n)}" target="_blank" class="${cls}">${esc(n)} 🔗</a>`;
+}
+
+// TABLE BUILDER
+function buildTable(data,hl=false){
+  if(!data.length)return'<div class="empty">Brak wyników</div>';
+  const today=todayStr();
+  const rows=data.slice(0,300).map(r=>`<tr class="${hl&&r.data===today?'new-row':''}">
+    <td><span class="pill pill-blue">${esc(r.arkusz.slice(0,20))}</span></td>
+    <td>${tlink(r.numer)}</td>
+    <td class="truncate">${esc(r.tytul)}</td>
+    <td class="truncate">${esc(r.adresat)}</td>
+    <td class="truncate">${esc(r.nadawca||'')}</td>
+    <td class="truncate" style="color:var(--yellow);font-weight:500">${esc(r.klient||'')}</td>
+    <td style="white-space:nowrap">${esc(r.data)}</td>
+  </tr>`).join('');
+  const extra=data.length>300?`<div style="padding:10px 12px;font-size:12px;color:var(--muted)">Pokazuję 300 z ${data.length.toLocaleString('pl')}</div>`:'';
+  return`<table><thead><tr><th>Arkusz</th><th>Numer przesyłki</th><th>Tytuł</th><th>Adresat</th><th>Nadawca</th><th style="color:var(--yellow)">Klient</th><th>Data</th></tr></thead><tbody>${rows}</tbody></table>${extra}`;
+}
+
+// SEARCH
+function doSearch(){
+  const q=document.getElementById('sq').value.trim().toLowerCase();
+  const sh=document.getElementById('ss').value;
+  const df=document.getElementById('sdf').value;
+  const dt=document.getElementById('sdt').value;
+  const ti=document.getElementById('st').value;
+  const res=recs.filter(r=>{
+    if(sh&&r.arkusz!==sh)return false;
+    if(df&&r.data<df)return false;
+    if(dt&&r.data>dt)return false;
+    if(ti&&r.tytul!==ti)return false;
+    if(!q)return true;
+    return r.numer.includes(q)||r.tytul.toLowerCase().includes(q)||r.adresat.toLowerCase().includes(q)||r.nadawca.toLowerCase().includes(q)||r.klient.toLowerCase().includes(q)||r.data.includes(q)||r.arkusz.toLowerCase().includes(q);
+  });
+  curResults=res;
+  document.getElementById('scount').textContent=`Znaleziono: ${res.length.toLocaleString('pl')} rekordów`;
+  document.getElementById('sresults').innerHTML=buildTable(res);
+  document.getElementById('sexport').style.display=res.length?'block':'none';
+}
+
+function clearSearch(){
+  ['sq','sdf','sdt'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ss').value='';document.getElementById('st').value='';
+  document.getElementById('sresults').innerHTML='<div class="empty">Ustaw filtry i kliknij Szukaj</div>';
+  document.getElementById('scount').textContent='';
+  document.getElementById('sexport').style.display='none';
+  curResults=[];
+}
+
+// SAVED SEARCHES
+function saveSearch(){
+  const q=document.getElementById('sq').value.trim();
+  const sh=document.getElementById('ss').value;
+  const ti=document.getElementById('st').value;
+  if(!q&&!sh&&!ti){toast('Brak kryteriów','var(--yellow)');return;}
+  const label=[q,sh,ti].filter(Boolean).join(' | ');
+  const df=document.getElementById('sdf').value;
+  const dt=document.getElementById('sdt').value;
+  savedSearches.push({label,q,sh,df,dt,ti});
+  localStorage.setItem('vcs',JSON.stringify(savedSearches));
+  renderSaved();toast('⭐ Zapisano!');
+}
+function loadSaved(){try{savedSearches=JSON.parse(localStorage.getItem('vcs')||'[]');}catch{savedSearches=[];}renderSaved();}
+function renderSaved(){
+  const w=document.getElementById('saved-wrap');
+  if(!savedSearches.length){w.innerHTML='';return;}
+  w.innerHTML=savedSearches.map((s,i)=>`<div class="saved-tag" onclick="applySaved(${i})">⭐ ${esc(s.label)} <span onclick="event.stopPropagation();delSaved(${i})" style="color:var(--muted);margin-left:4px;font-size:10px">✕</span></div>`).join('');
+}
+function applySaved(i){
+  const s=savedSearches[i];
+  document.getElementById('sq').value=s.q||'';document.getElementById('ss').value=s.sh||'';
+  document.getElementById('sdf').value=s.df||'';document.getElementById('sdt').value=s.dt||'';
+  document.getElementById('st').value=s.ti||'';doSearch();
+}
+function delSaved(i){savedSearches.splice(i,1);localStorage.setItem('vcs',JSON.stringify(savedSearches));renderSaved();}
+
+// TODAY
+function loadToday(){
+  const d=document.getElementById('tdate').value||todayStr();
+  const res=recs.filter(r=>{
+    if(!r.data)return false;
+    return r.data.slice(0,10)===d;
+  });
+  // Show sample dates if no results for debugging
+  let debugHtml='';
+  if(res.length===0&&recs.length>0){
+    const sampleDates=[...new Set(recs.slice(0,50).map(r=>r.data).filter(Boolean))].sort().reverse().slice(0,8);
+    debugHtml=`<div style="padding:16px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:10px;font-size:13px;color:var(--muted);margin-bottom:12px">
+      <strong style="color:var(--yellow)">⚠️ Brak wyników dla daty: ${d}</strong><br>
+      Najnowsze daty w bazie: <strong style="color:var(--text)">${sampleDates.join(', ')}</strong><br>
+      <span style="font-size:12px">Wybierz jedną z powyższych dat lub sprawdź format daty w Google Sheets.</span>
+    </div>`;
+  }
+  document.getElementById('tcount').textContent=`Przesyłki z ${d}: ${res.length.toLocaleString('pl')}`;
+  document.getElementById('tresults').innerHTML=debugHtml+buildTable(res,true);
+}
+function exportToday(){exportArr(recs.filter(r=>r.data===(document.getElementById('tdate').value||todayStr())),'Dzisiaj_'+todayStr());}
+
+// ANALYSIS
+function renderAnalysis(){
+  const months=getByMonth();
+  const byTitle={};recs.forEach(r=>{if(r.tytul)byTitle[r.tytul]=(byTitle[r.tytul]||0)+1;});
+  const topT=Object.entries(byTitle).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const maxT=topT[0]?topT[0][1]:1;
+  const byWeek={};
+  recs.forEach(r=>{
+    if(!r.data)return;
+    const d=new Date(r.data);
+    const w=Math.floor((d-new Date(d.getFullYear(),0,1))/604800000);
+    const k=`${d.getFullYear()}-W${String(w).padStart(2,'0')}`;
+    byWeek[k]=(byWeek[k]||0)+1;
+  });
+  const weeks=Object.entries(byWeek).sort((a,b)=>a[0].localeCompare(b[0])).slice(-12);
+  const maxW=Math.max(...weeks.map(x=>x[1]),1);
+  document.getElementById('wchart').innerHTML=weeks.map(([w,v])=>`
+    <div class="bar-wrap" title="${w}: ${v}">
+      <div class="bar-val">${v}</div>
+      <div class="bar neutral" style="height:${Math.max((v/maxW)*100,3)}%"></div>
+      <div class="bar-label">${w.slice(5)}</div>
+    </div>`).join('');
+  document.getElementById('tchart').innerHTML=topT.map(([t,v])=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+      <div style="font-size:12px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)">${esc(t)}</div>
+      <div style="height:8px;background:var(--accent);border-radius:3px;width:${Math.max((v/maxT)*120,4)}px;flex-shrink:0;opacity:.85"></div>
+      <div style="font-size:12px;font-weight:600;color:var(--accent);min-width:36px;text-align:right">${v.toLocaleString('pl')}</div>
+    </div>`).join('');
+  // YoY
+  const yoy={};
+  months.forEach(([m,v])=>{const[y,mo]=m.split('-');if(!yoy[mo])yoy[mo]={};yoy[mo][y]=v;});
+  const years=[...new Set(months.map(([m])=>m.slice(0,4)))].sort();
+  const mNames=['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
+  const cols=['var(--accent)','var(--green)','var(--yellow)'];
+  let yoyHtml='<div style="display:flex;flex-direction:column;gap:5px">';
+  ['01','02','03','04','05','06','07','08','09','10','11','12'].forEach((mo,idx)=>{
+    if(!years.some(y=>yoy[mo]&&yoy[mo][y]))return;
+    const maxV=Math.max(...years.map(y=>(yoy[mo]&&yoy[mo][y])||0),1);
+    yoyHtml+=`<div style="display:flex;align-items:center;gap:8px"><div style="font-size:12px;min-width:28px;color:var(--muted)">${mNames[idx]}</div>`;
+    years.forEach((y,yi)=>{
+      const v=(yoy[mo]&&yoy[mo][y])||0;
+      yoyHtml+=`<div style="display:flex;align-items:center;gap:4px;flex:1"><div style="height:16px;background:${cols[yi%3]};border-radius:3px;opacity:.8;width:${v?Math.max((v/maxV)*100,3):0}%;min-width:${v?2:0}px"></div><div style="font-size:11px;color:var(--muted)">${v||''}</div></div>`;
+    });
+    yoyHtml+='</div>';
+  });
+  yoyHtml+='</div><div style="display:flex;gap:14px;margin-top:10px">'+years.map((y,i)=>`<div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;background:${cols[i%3]};border-radius:2px;opacity:.8"></div><span style="font-size:12px;color:var(--muted)">${y}</span></div>`).join('')+'</div>';
+  document.getElementById('yoychart').innerHTML=yoyHtml;
+  // Stats
+  const avg=months.length?Math.round(recs.length/months.length):0;
+  const last30=recs.filter(r=>r.data&&r.data>=new Date(Date.now()-30*86400000).toISOString().slice(0,10)).length;
+  document.getElementById('astats').innerHTML=`
+    <div class="stat-card blue"><div class="stat-label">Śr. miesięcznie</div><div class="stat-value">${avg.toLocaleString('pl')}</div><div class="stat-sub">Średnia historyczna</div></div>
+    <div class="stat-card green"><div class="stat-label">Ostatnie 30 dni</div><div class="stat-value">${last30.toLocaleString('pl')}</div><div class="stat-sub">Aktywność bieżąca</div></div>
+    <div class="stat-card yellow"><div class="stat-label">Typy pism</div><div class="stat-value">${Object.keys(byTitle).length}</div><div class="stat-sub">Unikalnych tytułów</div></div>
+    <div class="stat-card purple"><div class="stat-label">Miesięcy danych</div><div class="stat-value">${months.length}</div><div class="stat-sub">Okres historyczny</div></div>`;
+}
+
+// CITIES + VOIVODESHIPS
+const VOIV={
+  'LĘBORK':'pomorskie','SŁUPSK':'pomorskie','GDAŃSK':'pomorskie','GDYNIA':'pomorskie','SOPOT':'pomorskie','WEJHEROWO':'pomorskie','TCZEW':'pomorskie','STAROGARD':'pomorskie','CHOJNICE':'pomorskie','BYTÓW':'pomorskie','KOŚCIERZYNA':'pomorskie','MALBORK':'pomorskie','KWIDZYN':'pomorskie','CZŁUCHÓW':'pomorskie','PRUSZCZ':'pomorskie',
+  'SZCZECIN':'zachodniopomorskie','KOSZALIN':'zachodniopomorskie','KOŁOBRZEG':'zachodniopomorskie','ŚWINOUJŚCIE':'zachodniopomorskie','STARGARD':'zachodniopomorskie',
+  'POZNAŃ':'wielkopolskie','KALISZ':'wielkopolskie','KONIN':'wielkopolskie','GNIEZNO':'wielkopolskie','LESZNO':'wielkopolskie','PIŁA':'wielkopolskie',
+  'WARSZAWA':'mazowieckie','RADOM':'mazowieckie','PŁOCK':'mazowieckie','SIEDLCE':'mazowieckie','PRUSZKÓW':'mazowieckie','LEGIONOWO':'mazowieckie',
+  'KRAKÓW':'małopolskie','TARNÓW':'małopolskie','NOWY SĄCZ':'małopolskie','ZAKOPANE':'małopolskie','OŚWIĘCIM':'małopolskie',
+  'WROCŁAW':'dolnośląskie','LEGNICA':'dolnośląskie','WAŁBRZYCH':'dolnośląskie','JELENIA GÓRA':'dolnośląskie','LUBIN':'dolnośląskie',
+  'KATOWICE':'śląskie','GLIWICE':'śląskie','ZABRZE':'śląskie','BYTOM':'śląskie','SOSNOWIEC':'śląskie','BIELSKO':'śląskie','CZĘSTOCHOWA':'śląskie','RYBNIK':'śląskie','TYCHY':'śląskie','DĄBROWA':'śląskie',
+  'ŁÓDŹ':'łódzkie','PIOTRKÓW':'łódzkie','SKIERNIEWICE':'łódzkie','TOMASZÓW':'łódzkie',
+  'LUBLIN':'lubelskie','ZAMOŚĆ':'lubelskie','CHEŁM':'lubelskie','BIAŁA PODLASKA':'lubelskie','PUŁAWY':'lubelskie',
+  'BIAŁYSTOK':'podlaskie','SUWAŁKI':'podlaskie','ŁOMŻA':'podlaskie','AUGUSTÓW':'podlaskie',
+  'RZESZÓW':'podkarpackie','PRZEMYŚL':'podkarpackie','KROSNO':'podkarpackie','TARNOBRZEG':'podkarpackie','STALOWA':'podkarpackie',
+  'KIELCE':'świętokrzyskie','OSTROWIEC':'świętokrzyskie','STARACHOWICE':'świętokrzyskie','SKARŻYSKO':'świętokrzyskie',
+  'OLSZTYN':'warmińsko-mazurskie','ELBLĄG':'warmińsko-mazurskie','EŁK':'warmińsko-mazurskie','GIŻYCKO':'warmińsko-mazurskie',
+  'BYDGOSZCZ':'kujawsko-pomorskie','TORUŃ':'kujawsko-pomorskie','WŁOCŁAWEK':'kujawsko-pomorskie','GRUDZIĄDZ':'kujawsko-pomorskie','INOWROCŁAW':'kujawsko-pomorskie',
+  'ZIELONA GÓRA':'lubuskie','GORZÓW':'lubuskie','ŻARY':'lubuskie',
+  'OPOLE':'opolskie','NYSA':'opolskie','KĘDZIERZYN':'opolskie',
+};
+
+function getVoiv(adresat){
+  const u=(adresat||'').toUpperCase();
+  for(const[c,v]of Object.entries(VOIV)){if(u.includes(c))return v;}
+  const pc=u.match(/(\d{2})-(\d{3})/);
+  if(pc){
+    const p=parseInt(pc[1]);
+    if(p<=19)return'mazowieckie';if(p<=26)return'łódzkie';if(p<=34)return'małopolskie';
+    if(p<=39)return'podkarpackie';if(p<=42)return'łódzkie';if(p<=44)return'śląskie';
+    if(p<=48)return'śląskie';if(p<=58)return'dolnośląskie';if(p<=59)return'dolnośląskie';
+    if(p<=63)return'wielkopolskie';if(p<=68)return'lubuskie';if(p<=78)return'zachodniopomorskie';
+    if(p<=84)return'pomorskie';if(p<=87)return'kujawsko-pomorskie';if(p<=89)return'warmińsko-mazurskie';
+  }
+  return'inne';
+}
+
+function renderCities(){
+  const cityMap={},voivMap={};
+  recs.forEach(r=>{
+    const a=r.adresat||'';
+    const m=a.match(/\d{2}-\d{3}\s+([A-ZŁŚŻŹĆĄĘÓŃ][A-ZŁŚŻŹĆĄĘÓŃa-złśżźćąęóń\s-]+)/);
+    if(m){const c=m[1].trim().split(/\s+/).slice(0,2).join(' ');if(c.length>2)cityMap[c]=(cityMap[c]||0)+1;}
+    const v=getVoiv(a);voivMap[v]=(voivMap[v]||0)+1;
+  });
+  allCities=Object.entries(cityMap).sort((a,b)=>b[1]-a[1]);
+  renderCityList(allCities);
+  // Voivodeships
+  const vs=Object.entries(voivMap).sort((a,b)=>b[1]-a[1]);
+  const maxV=vs[0]?vs[0][1]:1;
+  const cols=['#4f7aff','#22c55e','#f59e0b','#ef4444','#7c5cfc','#06b6d4','#f97316','#ec4899','#84cc16','#14b8a6','#a855f7','#6366f1','#d97706','#65a30d','#0891b2','#dc2626'];
+  document.getElementById('voiv-list').innerHTML=vs.map(([v,c],i)=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+      <div style="font-size:12px;min-width:170px;color:var(--text)">${v}</div>
+      <div style="height:16px;background:${cols[i%cols.length]};border-radius:3px;opacity:.85;width:${Math.max((c/maxV)*140,4)}px;flex-shrink:0"></div>
+      <div style="font-size:12px;font-weight:600;color:var(--muted)">${c.toLocaleString('pl')}</div>
+    </div>`).join('');
+  document.getElementById('voiv-pct').innerHTML=vs.map(([v,c],i)=>`
+    <div style="display:flex;justify-content:space-between;padding:5px 10px;background:var(--surface2);border-radius:6px;margin-bottom:5px;border-left:3px solid ${cols[i%cols.length]}">
+      <span style="font-size:12px">${v}</span>
+      <span style="font-size:12px;font-weight:600;color:${cols[i%cols.length]}">${((c/recs.length)*100).toFixed(1)}%</span>
+    </div>`).join('');
+}
+
+function renderCityList(cities){
+  const max=cities[0]?cities[0][1]:1;
+  document.getElementById('citycount').textContent=`${cities.length} miejscowości`;
+  document.getElementById('citylist').innerHTML=cities.slice(0,120).map(([c,n])=>`
+    <div class="city-card">
+      <div>
+        <div style="font-size:13px">${esc(c)}</div>
+        <div style="height:3px;background:var(--accent);border-radius:2px;margin-top:4px;width:${Math.max((n/max)*100,5)}%"></div>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:var(--accent)">${n.toLocaleString('pl')}</div>
+    </div>`).join('');
+}
+function filterCities(){
+  const q=document.getElementById('cityq').value.toLowerCase();
+  renderCityList(q?allCities.filter(([c])=>c.toLowerCase().includes(q)):allCities);
+}
+
+// ALERTS
+function renderAlerts(){
+  const alerts=[];
+  const dupCnt=new Set(dups.map(r=>r.numer)).size;
+  if(dupCnt>0)alerts.push({t:'red',title:'Duplikaty numerów',msg:`Wykryto <strong>${dupCnt}</strong> zduplikowanych numerów (${dups.length} rekordów). Przejdź do zakładki ⚠️ Duplikaty.`});
+  const todayN=recs.filter(r=>r.data===todayStr()).length;
+  if(todayN>0)alerts.push({t:'green',title:'Nowe przesyłki dzisiaj',msg:`Dodano <strong>${todayN}</strong> przesyłek w dniu ${todayStr()}.`});
+  const noDate=recs.filter(r=>!r.data).length;
+  if(noDate>0)alerts.push({t:'yellow',title:'Rekordy bez daty',msg:`<strong>${noDate}</strong> rekordów nie ma daty nadania.`});
+  const months=getByMonth();
+  if(months.length>=2){
+    const[pm,pv]=months[months.length-2],[cm,cv]=months[months.length-1];
+    const pct=Math.round((cv-pv)/pv*100);
+    if(Math.abs(pct)>20)alerts.push({t:pct>0?'green':'red',title:'Duża zmiana liczby przesyłek',msg:`Miesiąc <strong>${cm}</strong>: ${cv.toLocaleString('pl')} przesyłek (${pct>0?'+':''}${pct}% vs ${pm}).`});
+  }
+  const noNum=recs.filter(r=>!r.numer||r.numer==='X'||r.numer.length<5).length;
+  if(noNum>0)alerts.push({t:'yellow',title:'Rekordy bez numeru',msg:`<strong>${noNum}</strong> rekordów bez prawidłowego numeru przesyłki.`});
+  const bm={red:'rgba(239,68,68,.08)',green:'rgba(34,197,94,.08)',yellow:'rgba(245,158,11,.08)'};
+  const bb={red:'rgba(239,68,68,.25)',green:'rgba(34,197,94,.25)',yellow:'rgba(245,158,11,.25)'};
+  const bc={red:'var(--red)',green:'var(--green)',yellow:'var(--yellow)'};
+  document.getElementById('alerts-content').innerHTML=alerts.length?
+    alerts.map(a=>`<div style="background:${bm[a.t]};border:1px solid ${bb[a.t]};border-radius:10px;padding:14px 16px;margin-bottom:12px">
+      <div style="font-weight:600;color:${bc[a.t]};margin-bottom:5px">● ${a.title}</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.5">${a.msg}</div>
+    </div>`).join(''):
+    '<div class="empty">✅ Brak alertów — wszystko wygląda dobrze!</div>';
+}
+
+// DUPLICATES
+function renderDupTable(src){
+  const data=src||dups;
+  const u=new Set(data.map(r=>r.numer)).size;
+  document.getElementById('dcount').textContent=`${u} zduplikowanych numerów (${data.length} rekordów)`;
+  if(!data.length){document.getElementById('dtable').innerHTML='<div class="empty">Brak duplikatów 🎉</div>';return;}
+  const rows=data.slice(0,300).map(r=>`<tr>
+    <td><span class="pill pill-red">${esc(r.arkusz.slice(0,18))}</span></td>
+    <td>${tlink(r.numer,'tlink-red')}</td>
+    <td class="truncate">${esc(r.tytul)}</td>
+    <td class="truncate">${esc(r.adresat)}</td>
+    <td style="white-space:nowrap">${esc(r.data)}</td>
+  </tr>`).join('');
+  document.getElementById('dtable').innerHTML=`<table><thead><tr><th>Arkusz</th><th>Numer</th><th>Tytuł</th><th>Adresat</th><th>Data</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function filterDups(){
+  const q=document.getElementById('dq').value.toLowerCase();
+  renderDupTable(q?dups.filter(r=>r.numer.includes(q)||r.adresat.toLowerCase().includes(q)||r.tytul.toLowerCase().includes(q)||r.arkusz.toLowerCase().includes(q)):null);
+}
+
+// EXPORT
+function exportArr(data,name){
+  if(!data.length){toast('Brak danych','var(--yellow)');return;}
+  const ws=XLSX.utils.json_to_sheet(data.map(r=>({'Arkusz':r.arkusz,'Numer':r.numer,'Tytuł':r.tytul,'Adresat':r.adresat,'Nadawca':r.nadawca,'Klient':r.klient,'Data':r.data,'Status':r.status})));
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Dane');
+  XLSX.writeFile(wb,name+'.xlsx');
+  toast('✅ Wyeksportowano '+data.length.toLocaleString('pl')+' rekordów');
+}
+function exportAll(){exportArr(recs,'Poczta_Vestra_'+todayStr());}
+function exportResults(){exportArr(curResults,'Wyniki_'+todayStr());}
+function exportDups(){exportArr(dups,'Duplikaty_'+todayStr());}
+
+// PDF
+function genPDF(){
+  const months=getByMonth();
+  const bySheet={};recs.forEach(r=>{bySheet[r.arkusz]=(bySheet[r.arkusz]||0)+1;});
+  const dupCnt=new Set(dups.map(r=>r.numer)).size;
+  const best=months.reduce((a,b)=>b[1]>a[1]?b:a,['?',0]);
+  const last2=months.slice(-2);
+  const trend=last2.length===2?Math.round((last2[1][1]-last2[0][1])/last2[0][1]*100):0;
+  const todayN=recs.filter(r=>r.data===todayStr()).length;
+  const today=new Date().toLocaleDateString('pl-PL');
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"><title>Raport Poczty ${today}</title>
+  <style>body{font-family:'Segoe UI',sans-serif;margin:0;padding:40px;color:#111}
+  h1{color:#4f7aff;font-size:22px;margin:0 0 4px}.sub{font-size:13px;color:#888;margin-bottom:24px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+  .s{background:#f0f4ff;border-radius:10px;padding:14px;text-align:center}
+  .sv{font-size:26px;font-weight:700;color:#4f7aff}.sl{font-size:11px;color:#888;margin-top:3px;text-transform:uppercase}
+  h2{font-size:15px;border-left:4px solid #4f7aff;padding-left:10px;margin:22px 0 10px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px}
+  th{background:#4f7aff;color:#fff;padding:8px 10px;text-align:left}td{padding:7px 10px;border-bottom:1px solid #eee}
+  tr:nth-child(even)td{background:#f8f9ff}
+  .up{color:#16a34a;font-weight:600}.down{color:#dc2626;font-weight:600}
+  .footer{margin-top:36px;padding-top:16px;border-top:1px solid #eee;font-size:11px;color:#aaa;text-align:center}
+  .noprint{margin-bottom:20px}@media print{.noprint{display:none}}
+  </style></head><body>
+  <div class="noprint"><button onclick="window.print()" style="background:#4f7aff;color:#fff;border:none;padding:9px 18px;border-radius:7px;cursor:pointer;font-size:14px">🖨️ Drukuj / Zapisz PDF</button></div>
+  <h1>📮 Raport Poczty Wychodzącej</h1>
+  <div class="sub">Vestra Care, ul. Dworcowa 12, 84-300 Lębork &nbsp;|&nbsp; Świadczenie Wspierające &nbsp;|&nbsp; ${today}</div>
+  <div class="stats">
+    <div class="s"><div class="sv">${recs.length.toLocaleString('pl')}</div><div class="sl">Wszystkich przesyłek</div></div>
+    <div class="s"><div class="sv">${todayN}</div><div class="sl">Dzisiaj</div></div>
+    <div class="s"><div class="sv">${dupCnt}</div><div class="sl">Duplikaty</div></div>
+    <div class="s"><div class="sv ${trend>=0?'up':'down'}">${trend>=0?'▲':'▼'} ${Math.abs(trend)}%</div><div class="sl">Trend m/m</div></div>
+  </div>
+  <h2>Przesyłki miesięcznie</h2>
+  <table><tr><th>Miesiąc</th><th>Liczba</th><th>Zmiana</th></tr>
+  ${months.map(([m,v],i)=>{const pv=i>0?months[i-1][1]:v;const d=v-pv;const p=i>0?Math.round(d/pv*100):0;
+    return`<tr><td>${m}</td><td>${v.toLocaleString('pl')}</td><td>${i>0?`<span class="${d>=0?'up':'down'}">${d>=0?'▲':'▼'} ${Math.abs(p)}%</span>`:'-'}</td></tr>`;}).join('')}
+  </table>
+  <h2>Arkusze</h2>
+  <table><tr><th>Arkusz</th><th>Liczba przesyłek</th></tr>
+  ${Object.entries(bySheet).sort((a,b)=>b[1]-a[1]).map(([n,v])=>`<tr><td>${n}</td><td>${v.toLocaleString('pl')}</td></tr>`).join('')}
+  </table>
+  <div class="footer">Raport wygenerowany automatycznie | Vestra Care Poczta PRO | ${today}</div>
+  </body></html>`);
+  w.document.close();
+}
+
+// TABS
+function showTab(n,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+n).classList.add('active');el.classList.add('active');
+  if(n==='today'&&!document.getElementById('tdate').value){document.getElementById('tdate').value=todayStr();loadToday();}
+  if(n==='scan')initScanForm();
+}
+
+// AGENT AI
+function buildCtx(){
+  const bs={},bm={};
+  recs.forEach(r=>{bs[r.arkusz]=(bs[r.arkusz]||0)+1;const m=r.data?r.data.slice(0,7):null;if(m)bm[m]=(bm[m]||0)+1;});
+  const dupCnt=new Set(dups.map(r=>r.numer)).size;
+  const months=Object.entries(bm).sort((a,b)=>a[0].localeCompare(b[0]));
+  const best=months.reduce((a,b)=>b[1]>a[1]?b:a,['?',0]);
+  const sample=recs.slice(0,30).map(r=>`${r.arkusz}|${r.numer}|${r.tytul}|${r.adresat}|${r.data}`).join('\n');
+  agentCtx=`Jesteś agentem AI firmy Vestra Care (ul. Dworcowa 12, 84-300 Lębork) obsługującej Świadczenie Wspierające.
+DANE: ${recs.length.toLocaleString('pl')} rekordów | Duplikaty: ${dupCnt} | Najaktywniejszy: ${best[0]} (${best[1].toLocaleString('pl')})
+ARKUSZE: ${Object.entries(bs).map(([k,v])=>`${k}:${v}`).join(' | ')}
+MIESIĄCE: ${months.map(([m,v])=>`${m}:${v}`).join(' | ')}
+PRZYKŁADY:\n${sample}
+Możesz: analizować dane, pisać pisma urzędowe, generować raporty, wykrywać anomalie. Odpowiadaj PO POLSKU.`;
+  document.getElementById('wmsg').innerHTML=`Cześć! Załadowałem <strong>${recs.length.toLocaleString('pl')} rekordów</strong> z ${Object.keys(bs).length} arkuszy. Jak mogę pomóc?`;
+}
+
+async function sendChat(){
+  const inp=document.getElementById('ci');const msg=inp.value.trim();if(!msg)return;
+  inp.value='';addMsg('u',msg);
+  document.getElementById('sw').style.display='none';
+  document.getElementById('sbtn').disabled=true;
+  const tid=addTyping();
+  chatH.push({role:'user',parts:[{text:msg}]});
+  try{
+    const key=localStorage.getItem('gemini_key')||'';
+    if(!key){removeTyping(tid);addMsg('a','⚠️ Najpierw dodaj klucz API — kliknij 🔑 w nagłówku.');document.getElementById('sbtn').disabled=false;return;}
+    GEM_URL_CURRENT='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+key;
+    const res=await fetch(GEM_URL_CURRENT,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({system_instruction:{parts:[{text:agentCtx}]},contents:chatH,generationConfig:{maxOutputTokens:2048,temperature:0.7}})});
+    const d=await res.json();
+    if(d.error)throw new Error(d.error.message);
+    const reply=d.candidates?.[0]?.content?.parts?.[0]?.text||'Brak odpowiedzi.';
+    removeTyping(tid);addMsg('a',reply);chatH.push({role:'model',parts:[{text:reply}]});
+  }catch(e){removeTyping(tid);addMsg('a','❌ Błąd: '+e.message);}
+  document.getElementById('sbtn').disabled=false;
+}
+function addMsg(r,t){
+  const c=document.getElementById('cmsgs');const d=document.createElement('div');
+  const u=r==='u';d.className=u?'mu':'ma';
+  d.innerHTML=`<div class="ml2">${u?'👤 Ty':'🤖 Agent AI'}</div><div class="${u?'bu':'ba'}">${t.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^- (.*)$/gm,'<div style="padding-left:10px">• $1</div>').replace(/^### (.*)$/gm,'<div style="font-size:15px;font-weight:600;margin:6px 0 3px">$1</div>')}</div>`;
+  c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+function addTyping(){
+  const c=document.getElementById('cmsgs');const id='t'+Date.now();const d=document.createElement('div');
+  d.className='ma';d.id=id;d.innerHTML='<div class="ml2">🤖 Agent AI</div><div class="ba"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>';
+  c.appendChild(d);c.scrollTop=c.scrollHeight;return id;
+}
+function removeTyping(id){document.getElementById(id)?.remove();}
+function sendSugg(el){document.getElementById('ci').value=el.textContent;sendChat();}
+
+// SCAN
+let scanHistory=[];
+
+function initScanForm(){
+  const sheets=[...new Set(recs.map(r=>r.arkusz))];
+  document.getElementById('scan-arkusz').innerHTML=sheets.map(s=>`<option>${s}</option>`).join('');
+  const titles=[...new Set(recs.map(r=>r.tytul).filter(Boolean))].sort();
+  document.getElementById('scan-tytul').innerHTML=titles.map(t=>`<option>${esc(t)}</option>`).join('');
+  document.getElementById('scan-data').value=todayStr();
+  initAutocomplete();
+}
+
+function initAutocomplete(){
+  const unique=field=>[...new Set(recs.map(r=>r[field]).filter(v=>v&&v.trim().length>2))].sort();
+  const fill=(id,values)=>{
+    const dl=document.getElementById(id);
+    if(!dl)return;
+    dl.innerHTML=values.map(v=>`<option value="${esc(v)}">`).join('');
+  };
+  fill('dl-adresat',unique('adresat'));
+  fill('dl-nadawca',unique('nadawca'));
+  fill('dl-klient',unique('klient'));
+}
+
+function checkDuplicate(){
+  const numer=document.getElementById('scan-numer').value.trim();
+  const warn=document.getElementById('dup-warning');
+  const ok=document.getElementById('ok-sign');
+  if(!numer||numer.length<5){warn.style.display='none';ok.style.display='none';return;}
+  const existing=recs.filter(r=>r.numer===numer);
+  if(existing.length>0){
+    warn.style.display='block';
+    ok.style.display='none';
+    document.getElementById('dup-detail').textContent=
+      `Znaleziono w: ${existing.map(r=>r.arkusz).join(', ')} | Adresat: ${existing[0].adresat}`;
+  } else {
+    warn.style.display='none';
+    ok.style.display='block';
+  }
+}
+
+async function addRecord(){
+  const numer=document.getElementById('scan-numer').value.trim();
+  const arkusz=document.getElementById('scan-arkusz').value;
+  const tytul=document.getElementById('scan-tytul').value;
+  const adresat=document.getElementById('scan-adresat').value.trim();
+  const klient=document.getElementById('scan-klient').value.trim();
+  const data=document.getElementById('scan-data').value;
+  const status=document.getElementById('scan-status');
+
+  if(!numer){toast('Zeskanuj lub wpisz numer przesyłki!','var(--red)');return;}
+  if(!arkusz){toast('Wybierz arkusz!','var(--red)');return;}
+  if(!adresat){toast('Wpisz adresata!','var(--red)');return;}
+
+  status.textContent='⏳ Zapisuję do Google Sheets...';
+  status.style.color='var(--yellow)';
+
+  try{
+    const nadawca=document.getElementById('scan-nadawca').value.trim()||'VESTRA CARE UL. DWORCOWA 12; 84-300 LĘBORK';
+    const payload={
+      numer, arkusz, tytul, adresat, nadawca, klient,
+      data: data || todayStr()
+    };
+    // Use GET with params to avoid CORS issues
+    // Encode all params properly including special chars like /
+    const params=new URLSearchParams();
+    params.append('action','add');
+    params.append('numer',payload.numer);
+    params.append('arkusz',payload.arkusz);
+    params.append('tytul',payload.tytul||'');
+    params.append('adresat',payload.adresat||'');
+    params.append('klient',payload.klient||'');
+    params.append('data',payload.data||'');
+    params.append('nadawca',payload.nadawca||'');
+    const res=await fetch(API+'?'+params.toString());
+    const result=await res.json();
+    if(result.success){
+      // Add to local records
+      recs.push({arkusz,numer,tytul,adresat,nadawca:nadawca,klient,data:data||todayStr(),status:'ŚLEDŹ PRZESYŁKĘ'});
+      initAutocomplete(); // Refresh autocomplete with new record
+      // Add to session history
+      scanHistory.unshift({numer,arkusz,tytul,adresat,klient,data:data||todayStr()});
+      renderScanHistory();
+      status.textContent='✅ Dodano pomyślnie!';
+      status.style.color='var(--green)';
+      toast('✅ Przesyłka dodana do arkusza: '+arkusz);
+      // Clear for next scan
+      document.getElementById('scan-numer').value='';
+      document.getElementById('scan-adresat').value='';
+      document.getElementById('scan-klient').value='';
+      document.getElementById('dup-warning').style.display='none';
+      document.getElementById('ok-sign').style.display='none';
+      document.getElementById('scan-numer').focus();
+      setTimeout(()=>{status.textContent='';},3000);
+    } else {
+      throw new Error(result.error||'Nieznany błąd');
+    }
+  }catch(e){
+    status.textContent='❌ Błąd: '+e.message;
+    status.style.color='var(--red)';
+    toast('❌ '+e.message,'var(--red)');
+  }
+}
+
+function renderScanHistory(){
+  if(!scanHistory.length){
+    document.getElementById('scan-history').innerHTML='<div class="empty">Jeszcze nic nie dodano w tej sesji</div>';
+    return;
+  }
+  const rows=scanHistory.map(r=>`<tr>
+    <td><span class="pill pill-green">✅ Dodano</span></td>
+    <td style="font-family:monospace;font-size:12px;color:var(--green)">${esc(r.numer)}</td>
+    <td><span class="pill pill-blue">${esc(r.arkusz.slice(0,18))}</span></td>
+    <td class="truncate">${esc(r.tytul)}</td>
+    <td class="truncate">${esc(r.adresat)}</td>
+    <td class="truncate" style="color:var(--yellow)">${esc(r.klient)}</td>
+    <td>${esc(r.data)}</td>
+  </tr>`).join('');
+  document.getElementById('scan-history').innerHTML=`
+    <table><thead><tr><th>Status</th><th>Numer</th><th>Arkusz</th><th>Tytuł</th><th>Adresat</th><th>Klient</th><th>Data</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+}
+
+function clearScanForm(){
+  ['scan-numer','scan-adresat','scan-nadawca','scan-klient'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('scan-data').value=todayStr();
+  document.getElementById('dup-warning').style.display='none';
+  document.getElementById('ok-sign').style.display='none';
+  document.getElementById('scan-status').textContent='';
+  document.getElementById('scan-numer').focus();
+}
+
+
+
+// API KEY MANAGEMENT
+function showKeyDialog(){
+  document.getElementById('key-dialog').style.display='flex';
+  document.getElementById('gem-key-input').value=localStorage.getItem('gemini_key')||'';
+  setTimeout(()=>document.getElementById('gem-key-input').focus(),100);
+}
+function closeKeyDialog(){document.getElementById('key-dialog').style.display='none';}
+function saveGemKey(){
+  const k=document.getElementById('gem-key-input').value.trim();
+  if(k){
+    localStorage.setItem('gemini_key',k);
+    GEM_URL_CURRENT='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+k;
+    toast('✅ Klucz API zapisany!');
+  }
+  closeKeyDialog();
+}
+
+// START
+document.getElementById('tdate').value=todayStr();
+loadData();
+</script>
+<div id="pwa-banner" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#1a1d27,#22263a);border:1px solid #4f7aff;border-radius:12px;padding:14px 20px;z-index:1000;display:flex;align-items:center;gap:14px;box-shadow:0 8px 32px rgba(0,0,0,.4)">
+  <div>
+    <div style="font-size:14px;font-weight:600;color:#e8eaf6">📲 Zainstaluj VestraMail Pro</div>
+    <div style="font-size:12px;color:#7b82a8">Dodaj do pulpitu i używaj jak prawdziwy program</div>
+  </div>
+  <button onclick="installPWA()" style="background:#4f7aff;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">Zainstaluj</button>
+  <button onclick="document.getElementById('pwa-banner').style.display='none'" style="background:transparent;border:none;color:#7b82a8;cursor:pointer;font-size:18px;padding:4px">✕</button>
+</div>
+
+<script>
+// PWA Service Worker
+if('serviceWorker' in navigator) {
+  const swCode = `
+    const CACHE='vestramail-v1';
+    const ASSETS=['/'];
+    self.addEventListener('install', e => {
+      e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
+      self.skipWaiting();
+    });
+    self.addEventListener('activate', e => {
+      e.waitUntil(caches.keys().then(keys => 
+        Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))
+      ));
+      self.clients.claim();
+    });
+    self.addEventListener('fetch', e => {
+      if(e.request.url.includes('script.google.com') || 
+         e.request.url.includes('generativelanguage') ||
+         e.request.url.includes('cdnjs')) {
+        return; // Don't cache external APIs
+      }
+      e.respondWith(
+        caches.match(e.request).then(r => r || fetch(e.request))
+      );
+    });
+  `;
+  const blob = new Blob([swCode], {type:'application/javascript'});
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).then(() => {
+    console.log('VestraMail PWA: Service Worker registered');
+  }).catch(e => console.log('SW error:', e));
+}
+
+// PWA Install prompt
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('pwa-banner').style.display = 'flex';
+});
+
+function installPWA() {
+  if(!deferredPrompt) {
+    alert('Aby zainstalować:\n1. Kliknij ⋮ (trzy kropki) w prawym górnym rogu Chrome\n2. Wybierz "Zainstaluj VestraMail Pro"\n3. Kliknij Zainstaluj');
+    return;
+  }
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(result => {
+    if(result.outcome === 'accepted') {
+      document.getElementById('pwa-banner').style.display = 'none';
+      toast('✅ VestraMail Pro zainstalowany!');
+    }
+    deferredPrompt = null;
+  });
+}
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('pwa-banner').style.display = 'none';
+  toast('✅ VestraMail Pro zainstalowany na pulpicie!');
+});
+</script>
+</body>
+</html>
