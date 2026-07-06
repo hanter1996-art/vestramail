@@ -6,21 +6,6 @@
 <title>VestraMail Pro</title>
 <meta name="description" content="System zarządzania korespondencją Vestra Care">
 <meta name="theme-color" content="#0f1117">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="VestraMail">
-<link rel="manifest" href="data:application/json,{
-  %22name%22:%22VestraMail Pro%22,
-  %22short_name%22:%22VestraMail%22,
-  %22description%22:%22System zarz%C4%85dzania korespondencj%C4%85 Vestra Care%22,
-  %22start_url%22:%22.%22,
-  %22display%22:%22standalone%22,
-  %22background_color%22:%22%230f1117%22,
-  %22theme_color%22:%22%234f7aff%22,
-  %22orientation%22:%22landscape%22,
-  %22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%230f1117'/%3E%3Crect x='80' y='160' width='352' height='240' rx='16' fill='none' stroke='%234f7aff' stroke-width='24'/%3E%3Cpath d='M80 192 L256 304 L432 192' fill='none' stroke='%234f7aff' stroke-width='24'/%3E%3Ccircle cx='390' cy='140' r='60' fill='%2322c55e'/%3E%3Cpath d='M365 140 L383 158 L415 126' fill='none' stroke='white' stroke-width='12' stroke-linecap='round'/%3E%3C/svg%3E%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22any maskable%22}]
-}">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{--bg:#0f1117;--surface:#1a1d27;--surface2:#22263a;--border:#2e3350;--accent:#4f7aff;--accent2:#7c5cfc;--green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--orange:#f97316;--text:#e8eaf6;--muted:#7b82a8;--font:'Segoe UI',system-ui,sans-serif}
@@ -143,6 +128,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--surface2)}
     </div>
   </div>
 </div>
+
 <div id="app" style="display:none">
 <header>
   <div class="logo">Vestra Care <span>Poczta PRO</span></div>
@@ -153,7 +139,6 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--surface2)}
   <button class="hbtn" onclick="exportAll()">📤 Excel</button>
   <button class="hbtn ml" onclick="genPDF()">📄 Raport PDF</button>
   <button class="hbtn" onclick="showKeyDialog()" style="border-color:var(--yellow);color:var(--yellow)" title="Ustaw klucz API Gemini">🔑 API</button>
-  <button class="hbtn" onclick="installPWA()" title="Zainstaluj jako aplikację" style="border-color:var(--green);color:var(--green)">📲 Zainstaluj</button>
 </header>
 
 <div class="tabs">
@@ -161,10 +146,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--surface2)}
   <div class="tab" onclick="showTab('search',this)">🔍 Wyszukiwarka</div>
   <div class="tab" onclick="showTab('scan',this)" style="border-color:var(--green);color:var(--green)">📷 Skanuj</div>
   <div class="tab" onclick="showTab('today',this)">📅 Dzisiaj</div>
-  <div class="tab" onclick="showTab('analysis',this)">📈 Analizy</div>
-  <div class="tab" onclick="showTab('cities',this)">🗺️ Miejscowości</div>
   <div class="tab" onclick="showTab('alerts',this)">🚨 Alerty</div>
-  <div class="tab" onclick="showTab('dups',this)">⚠️ Duplikaty</div>
   <div class="tab" onclick="showTab('agent',this)">🤖 Agent AI</div>
 </div>
 
@@ -213,30 +195,6 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--surface2)}
   <div class="table-wrap" id="tresults"><div class="empty">Wybierz datę i kliknij Pokaż</div></div>
 </div>
 
-<!-- ANALIZY -->
-<div id="panel-analysis" class="panel">
-  <div class="stats-grid" id="astats"></div>
-  <div class="two-col">
-    <div class="chart-wrap"><div class="chart-title">Trend tygodniowy (ostatnie 12 tyg.)</div><div class="bar-chart" id="wchart"></div></div>
-    <div class="chart-wrap"><div class="chart-title">Top 10 typów pism</div><div id="tchart" style="margin-top:6px"></div></div>
-  </div>
-  <div class="chart-wrap"><div class="chart-title">Rok do roku (YoY)</div><div id="yoychart" style="margin-top:6px"></div></div>
-</div>
-
-<!-- MIEJSCOWOŚCI -->
-<div id="panel-cities" class="panel">
-  <div class="two-col">
-    <div class="chart-wrap"><div class="chart-title">Rozkład wg województw</div><div id="voiv-list" style="margin-top:6px"></div></div>
-    <div class="chart-wrap"><div class="chart-title">Udział % województw</div><div id="voiv-pct" style="margin-top:6px"></div></div>
-  </div>
-  <div class="chart-wrap">
-    <div class="chart-title">Top miejscowości</div>
-    <div style="display:flex;gap:10px;margin-bottom:12px"><input type="text" class="si" id="cityq" placeholder="Szukaj miejscowości..." oninput="filterCities()" style="flex:1"></div>
-    <div class="ci" id="citycount"></div>
-    <div class="city-grid" id="citylist"></div>
-  </div>
-</div>
-
 <!-- ALERTY -->
 <div id="panel-alerts" class="panel">
   <div class="info-box"><strong>🚨 Centrum alertów</strong> — automatyczne wykrywanie problemów i anomalii w danych.</div>
@@ -245,6 +203,13 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--surface2)}
 
 <!-- SKANUJ -->
 <div id="panel-scan" class="panel">
+
+  <div style="display:flex;gap:10px;margin-bottom:20px">
+    <button class="btn" id="mode-single-btn" onclick="switchScanMode('single')">🔂 Pojedyncze skanowanie</button>
+    <button class="btn sec" id="mode-serial-btn" onclick="switchScanMode('serial')">📦 Skanowanie seryjne</button>
+  </div>
+
+<div id="single-scan-mode">
   <div class="info-box g">
     <strong>📷 Skanowanie przesyłek</strong> — kliknij w pole "Numer przesyłki", zeskanuj kod z znaczka Envelo, uzupełnij dane i kliknij Dodaj. Rekord trafi bezpośrednio do Google Sheets!
   </div>
@@ -286,7 +251,10 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--surface2)}
       </div>
       <div class="fg">
         <div class="fl">Tytuł pisma *</div>
-        <select class="si" id="scan-tytul" style="width:100%"></select>
+        <input type="text" class="si" id="scan-tytul" list="dl-tytul"
+          placeholder="Zacznij wpisywać tytuł pisma..." style="width:100%"
+          onkeydown="if(event.key==='Enter')document.getElementById('scan-adresat').focus()">
+        <datalist id="dl-tytul"></datalist>
       </div>
       <div class="fg" style="grid-column:1/-1">
         <div class="fl">Adresat *</div>
@@ -298,7 +266,7 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--surface2)}
       <div class="fg" style="grid-column:1/-1">
         <div class="fl">Nadawca</div>
         <input type="text" class="si" id="scan-nadawca" list="dl-nadawca"
-          placeholder="VESTRA CARE UL. DWORCOWA 12; 84-300 LĘBORK" style="width:100%"
+          placeholder="Wpisz lub wybierz z podpowiedzi..." style="width:100%"
           onkeydown="if(event.key==='Enter')document.getElementById('scan-klient').focus()">
         <datalist id="dl-nadawca"></datalist>
       </div>
@@ -335,18 +303,66 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--surface2)}
     </div>
   </div>
 </div>
+<!-- /single-scan-mode -->
 
-<!-- DUPLIKATY -->
-<div id="panel-dups" class="panel">
-  <div class="info-box"><strong>⚠️ Duplikaty</strong> — numery przesyłek pojawiające się więcej niż raz.</div>
-  <div style="display:flex;gap:10px;margin-bottom:12px">
-    <input type="text" class="si" id="dq" placeholder="Szukaj w duplikatach..." oninput="filterDups()" style="flex:1">
-    <button class="btn sec" onclick="document.getElementById('dq').value='';filterDups()">Wyczyść</button>
-    <button class="btn gbtn" onclick="exportDups()">📤 Eksport</button>
+<!-- SERIAL SCAN MODE -->
+<div id="serial-scan-mode" style="display:none">
+
+  <!-- STEP 1: SCANNING -->
+  <div id="serial-step1">
+    <div class="info-box g">
+      <strong>📦 Skanowanie seryjne</strong> — kliknij "Rozpocznij", a potem skanuj kody jeden po drugim (np. całą kartkę 18 znaczków Envelo). Skaner sam wysyła Enter po każdym kodzie, więc pole samo się czyści i czeka na kolejny. Gdy skończysz, kliknij "Zakończ skanowanie" i przejdź do uzupełniania danych.
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div style="font-size:16px;font-weight:600">Zeskanowano: <span id="serial-count" style="color:var(--green)">0</span> kodów</div>
+        <button class="btn gbtn" id="serial-finish-btn" onclick="finishSerialScan()" style="display:none">✅ Zakończ skanowanie</button>
+      </div>
+      <input type="text" id="serial-input" class="si" placeholder="Zeskanuj kod przesyłki..."
+        style="width:100%;font-family:monospace;font-size:16px;padding:14px 16px;border-color:var(--green);display:none"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();addSerialScan()}">
+      <button class="btn" id="serial-start-btn" onclick="startSerialScan()" style="margin-top:14px">▶️ Rozpocznij skanowanie seryjne</button>
+    </div>
+    <div class="table-wrap" id="serial-list" style="display:none"></div>
   </div>
-  <div class="ci" id="dcount"></div>
-  <div class="table-wrap" id="dtable"><div class="empty">Ładowanie...</div></div>
+
+  <!-- STEP 2: FILL DATA -->
+  <div id="serial-step2" style="display:none">
+    <div class="info-box"><strong>📝 Krok 2 — uzupełnij dane</strong> — dla każdej zeskanowanej przesyłki wybierz arkusz i tytuł, wpisz adresata. Możesz skopiować dane z wiersza wyżej albo zastosować dane z wiersza 1 do wszystkich naraz. Wiersze podświetlone na czerwono to numery, które już są w bazie — zostaną pominięte przy zapisie.</div>
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+      <button class="btn sec" onclick="applyToAll()">⬇️ Zastosuj wiersz 1 do wszystkich</button>
+      <button class="btn sec" onclick="backToStep1()">◀️ Wróć do skanowania</button>
+      <div style="margin-left:auto;font-size:13px;color:var(--yellow)" id="serial-dup-info"></div>
+    </div>
+    <div class="table-wrap" style="overflow-x:auto">
+      <table id="serial-table">
+        <thead><tr>
+          <th>Numer</th><th>Arkusz *</th><th>Tytuł</th><th>Adresat *</th><th>Nadawca</th><th>Klient</th><th>Data</th><th></th>
+        </tr></thead>
+        <tbody id="serial-tbody"></tbody>
+      </table>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <button class="btn" style="background:var(--green);font-size:15px;padding:14px 28px" onclick="saveSerialBatch()">✅ Dodaj wszystkie do Google Sheets</button>
+      <button class="btn sec" onclick="cancelSerialBatch()">🗑️ Anuluj i zacznij od nowa</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: SAVE PROGRESS -->
+  <div id="serial-step3" style="display:none">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px">
+      <div style="font-size:15px;font-weight:600;margin-bottom:14px">Zapisywanie do Google Sheets...</div>
+      <div class="pw" style="width:100%"><div class="pb" id="serial-pb"></div></div>
+      <div style="margin-top:10px;font-size:13px;color:var(--muted)" id="serial-progress-text"></div>
+    </div>
+    <div id="serial-summary" style="margin-top:20px"></div>
+  </div>
+
 </div>
+<!-- /serial-scan-mode -->
+
+</div>
+<!-- /panel-scan -->
 
 <!-- AGENT AI -->
 <div id="panel-agent" class="panel">
@@ -373,19 +389,29 @@ tr:last-child td{border-bottom:none}tr:hover td{background:var(--surface2)}
 </div>
 
 <script>
-// CONFIG
+// ================================================
+// SEKCJA 1: KONFIGURACJA I STAŁE
+// ================================================
+
 const API='https://script.google.com/macros/s/AKfycbwE3h0wxJjhWHwsb6-XbwuPX4le61gntX6u99riH7b4R0to48uN39dbgoqXFN1ystog/exec';
+
 const TRACK='https://emonitoring.poczta-polska.pl/?numer=';
+
 const GEM_KEY=localStorage.getItem('gemini_key')||'';
+
 let GEM_URL_CURRENT='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+(localStorage.getItem('gemini_key')||'');
+
 const GEM_URL=null; // Use GEM_URL_CURRENT instead
 
-// STATE
 let recs=[],dups=[],chatH=[],agentCtx='',savedSearches=[],curResults=[];
-let allCities=[];
 
-// HELPERS
+
+// ================================================
+// SEKCJA 2: POMOCNICZE (HELPERS)
+// ================================================
+
 const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
 const todayStr=()=>{
   const d=new Date();
   const y=d.getFullYear();
@@ -393,19 +419,35 @@ const todayStr=()=>{
   const day=String(d.getDate()).padStart(2,'0');
   return y+'-'+m+'-'+day;
 };
+
 const toast=(m,c='var(--green)')=>{const t=document.getElementById('toast');t.textContent=m;t.style.background=c;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);};
+
 const setP=(p,s)=>{document.getElementById('pb').style.width=p+'%';document.getElementById('lstat').textContent=s;};
+
+const PL_TZ_FMT=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Warsaw',year:'numeric',month:'2-digit',day:'2-digit'});
 
 function parseDate(v){
   if(!v)return'';v=String(v).trim();
   if(/^\d{2}\.\d{2}\.\d{4}$/.test(v)){const[d,m,y]=v.split('.');return y+'-'+m+'-'+d;}
+  // Pełny znacznik czasu z Google Sheets (np. 2026-07-02T22:00:00.000Z) — to jest
+  // czas UTC, więc trzeba przeliczyć na polską strefę czasową, inaczej data
+  // "ucieka" o jeden dzień wstecz (np. wieczorem/w nocy w Polsce).
+  if(/^\d{4}-\d{2}-\d{2}T/.test(v)){
+    const dt=new Date(v);
+    if(!isNaN(dt))return PL_TZ_FMT.format(dt);
+    return v.slice(0,10);
+  }
   if(/^\d{4}-\d{2}-\d{2}/.test(v))return v.slice(0,10);
   const n=parseFloat(v);
   if(!isNaN(n)&&n>40000&&n<60000){const d=new Date((n-25569)*86400000);return d.toISOString().slice(0,10);}
   return v.slice(0,10)||'';
 }
 
-// LOAD DATA - exact copy from working LIVE version
+
+// ================================================
+// SEKCJA 3: ŁADOWANIE I ODŚWIEŻANIE DANYCH
+// ================================================
+
 async function loadData(){
   try{
     setP(10,'Łączenie z Google Sheets...');
@@ -475,13 +517,17 @@ async function refreshData(){
   ri.className='';
 }
 
-// RENDER ALL
+
+// ================================================
+// SEKCJA 4: DASHBOARD
+// ================================================
+
 function renderAll(){
   document.getElementById('tbadge').textContent=recs.length.toLocaleString('pl')+' rekordów';
   document.getElementById('lupdate').textContent='🕐 '+new Date().toLocaleTimeString('pl-PL');
   renderStats();renderChart();renderSheets();
   renderSheetFilter();renderTitleFilter();
-  renderDupTable();renderAlerts();renderCities();renderAnalysis();
+  renderAlerts();
   initAutocomplete();
 }
 
@@ -539,6 +585,11 @@ function renderSheets(){
     .map(([n,c])=>`<div class="sheet-card"><div class="sheet-name">${esc(n)}</div><div class="sheet-count">${c.toLocaleString('pl')}</div></div>`).join('');
 }
 
+
+// ================================================
+// SEKCJA 5: WYSZUKIWARKA
+// ================================================
+
 function renderSheetFilter(){
   const sheets=[...new Set(recs.map(r=>r.arkusz))];
   document.getElementById('ss').innerHTML='<option value="">Wszystkie arkusze</option>'+sheets.map(a=>`<option>${a}</option>`).join('');
@@ -549,13 +600,11 @@ function renderTitleFilter(){
   document.getElementById('st').innerHTML='<option value="">Wszystkie typy</option>'+titles.map(t=>`<option>${esc(t)}</option>`).join('');
 }
 
-// TRACKING LINK
 function tlink(n,cls='tlink'){
   if(!n||n==='X'||n.length<5)return`<span style="font-family:monospace;font-size:12px">${esc(n)}</span>`;
   return`<a href="${TRACK}${esc(n)}" target="_blank" class="${cls}">${esc(n)} 🔗</a>`;
 }
 
-// TABLE BUILDER
 function buildTable(data,hl=false){
   if(!data.length)return'<div class="empty">Brak wyników</div>';
   const today=todayStr();
@@ -572,7 +621,6 @@ function buildTable(data,hl=false){
   return`<table><thead><tr><th>Arkusz</th><th>Numer przesyłki</th><th>Tytuł</th><th>Adresat</th><th>Nadawca</th><th style="color:var(--yellow)">Klient</th><th>Data</th></tr></thead><tbody>${rows}</tbody></table>${extra}`;
 }
 
-// SEARCH
 function doSearch(){
   const q=document.getElementById('sq').value.trim().toLowerCase();
   const sh=document.getElementById('ss').value;
@@ -602,7 +650,6 @@ function clearSearch(){
   curResults=[];
 }
 
-// SAVED SEARCHES
 function saveSearch(){
   const q=document.getElementById('sq').value.trim();
   const sh=document.getElementById('ss').value;
@@ -615,21 +662,29 @@ function saveSearch(){
   localStorage.setItem('vcs',JSON.stringify(savedSearches));
   renderSaved();toast('⭐ Zapisano!');
 }
+
 function loadSaved(){try{savedSearches=JSON.parse(localStorage.getItem('vcs')||'[]');}catch{savedSearches=[];}renderSaved();}
+
 function renderSaved(){
   const w=document.getElementById('saved-wrap');
   if(!savedSearches.length){w.innerHTML='';return;}
   w.innerHTML=savedSearches.map((s,i)=>`<div class="saved-tag" onclick="applySaved(${i})">⭐ ${esc(s.label)} <span onclick="event.stopPropagation();delSaved(${i})" style="color:var(--muted);margin-left:4px;font-size:10px">✕</span></div>`).join('');
 }
+
 function applySaved(i){
   const s=savedSearches[i];
   document.getElementById('sq').value=s.q||'';document.getElementById('ss').value=s.sh||'';
   document.getElementById('sdf').value=s.df||'';document.getElementById('sdt').value=s.dt||'';
   document.getElementById('st').value=s.ti||'';doSearch();
 }
+
 function delSaved(i){savedSearches.splice(i,1);localStorage.setItem('vcs',JSON.stringify(savedSearches));renderSaved();}
 
-// TODAY
+
+// ================================================
+// SEKCJA 6: DZISIAJ
+// ================================================
+
 function loadToday(){
   const d=document.getElementById('tdate').value||todayStr();
   const res=recs.filter(r=>{
@@ -649,145 +704,14 @@ function loadToday(){
   document.getElementById('tcount').textContent=`Przesyłki z ${d}: ${res.length.toLocaleString('pl')}`;
   document.getElementById('tresults').innerHTML=debugHtml+buildTable(res,true);
 }
+
 function exportToday(){exportArr(recs.filter(r=>r.data===(document.getElementById('tdate').value||todayStr())),'Dzisiaj_'+todayStr());}
 
-// ANALYSIS
-function renderAnalysis(){
-  const months=getByMonth();
-  const byTitle={};recs.forEach(r=>{if(r.tytul)byTitle[r.tytul]=(byTitle[r.tytul]||0)+1;});
-  const topT=Object.entries(byTitle).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  const maxT=topT[0]?topT[0][1]:1;
-  const byWeek={};
-  recs.forEach(r=>{
-    if(!r.data)return;
-    const d=new Date(r.data);
-    const w=Math.floor((d-new Date(d.getFullYear(),0,1))/604800000);
-    const k=`${d.getFullYear()}-W${String(w).padStart(2,'0')}`;
-    byWeek[k]=(byWeek[k]||0)+1;
-  });
-  const weeks=Object.entries(byWeek).sort((a,b)=>a[0].localeCompare(b[0])).slice(-12);
-  const maxW=Math.max(...weeks.map(x=>x[1]),1);
-  document.getElementById('wchart').innerHTML=weeks.map(([w,v])=>`
-    <div class="bar-wrap" title="${w}: ${v}">
-      <div class="bar-val">${v}</div>
-      <div class="bar neutral" style="height:${Math.max((v/maxW)*100,3)}%"></div>
-      <div class="bar-label">${w.slice(5)}</div>
-    </div>`).join('');
-  document.getElementById('tchart').innerHTML=topT.map(([t,v])=>`
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
-      <div style="font-size:12px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)">${esc(t)}</div>
-      <div style="height:8px;background:var(--accent);border-radius:3px;width:${Math.max((v/maxT)*120,4)}px;flex-shrink:0;opacity:.85"></div>
-      <div style="font-size:12px;font-weight:600;color:var(--accent);min-width:36px;text-align:right">${v.toLocaleString('pl')}</div>
-    </div>`).join('');
-  // YoY
-  const yoy={};
-  months.forEach(([m,v])=>{const[y,mo]=m.split('-');if(!yoy[mo])yoy[mo]={};yoy[mo][y]=v;});
-  const years=[...new Set(months.map(([m])=>m.slice(0,4)))].sort();
-  const mNames=['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
-  const cols=['var(--accent)','var(--green)','var(--yellow)'];
-  let yoyHtml='<div style="display:flex;flex-direction:column;gap:5px">';
-  ['01','02','03','04','05','06','07','08','09','10','11','12'].forEach((mo,idx)=>{
-    if(!years.some(y=>yoy[mo]&&yoy[mo][y]))return;
-    const maxV=Math.max(...years.map(y=>(yoy[mo]&&yoy[mo][y])||0),1);
-    yoyHtml+=`<div style="display:flex;align-items:center;gap:8px"><div style="font-size:12px;min-width:28px;color:var(--muted)">${mNames[idx]}</div>`;
-    years.forEach((y,yi)=>{
-      const v=(yoy[mo]&&yoy[mo][y])||0;
-      yoyHtml+=`<div style="display:flex;align-items:center;gap:4px;flex:1"><div style="height:16px;background:${cols[yi%3]};border-radius:3px;opacity:.8;width:${v?Math.max((v/maxV)*100,3):0}%;min-width:${v?2:0}px"></div><div style="font-size:11px;color:var(--muted)">${v||''}</div></div>`;
-    });
-    yoyHtml+='</div>';
-  });
-  yoyHtml+='</div><div style="display:flex;gap:14px;margin-top:10px">'+years.map((y,i)=>`<div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;background:${cols[i%3]};border-radius:2px;opacity:.8"></div><span style="font-size:12px;color:var(--muted)">${y}</span></div>`).join('')+'</div>';
-  document.getElementById('yoychart').innerHTML=yoyHtml;
-  // Stats
-  const avg=months.length?Math.round(recs.length/months.length):0;
-  const last30=recs.filter(r=>r.data&&r.data>=new Date(Date.now()-30*86400000).toISOString().slice(0,10)).length;
-  document.getElementById('astats').innerHTML=`
-    <div class="stat-card blue"><div class="stat-label">Śr. miesięcznie</div><div class="stat-value">${avg.toLocaleString('pl')}</div><div class="stat-sub">Średnia historyczna</div></div>
-    <div class="stat-card green"><div class="stat-label">Ostatnie 30 dni</div><div class="stat-value">${last30.toLocaleString('pl')}</div><div class="stat-sub">Aktywność bieżąca</div></div>
-    <div class="stat-card yellow"><div class="stat-label">Typy pism</div><div class="stat-value">${Object.keys(byTitle).length}</div><div class="stat-sub">Unikalnych tytułów</div></div>
-    <div class="stat-card purple"><div class="stat-label">Miesięcy danych</div><div class="stat-value">${months.length}</div><div class="stat-sub">Okres historyczny</div></div>`;
-}
 
-// CITIES + VOIVODESHIPS
-const VOIV={
-  'LĘBORK':'pomorskie','SŁUPSK':'pomorskie','GDAŃSK':'pomorskie','GDYNIA':'pomorskie','SOPOT':'pomorskie','WEJHEROWO':'pomorskie','TCZEW':'pomorskie','STAROGARD':'pomorskie','CHOJNICE':'pomorskie','BYTÓW':'pomorskie','KOŚCIERZYNA':'pomorskie','MALBORK':'pomorskie','KWIDZYN':'pomorskie','CZŁUCHÓW':'pomorskie','PRUSZCZ':'pomorskie',
-  'SZCZECIN':'zachodniopomorskie','KOSZALIN':'zachodniopomorskie','KOŁOBRZEG':'zachodniopomorskie','ŚWINOUJŚCIE':'zachodniopomorskie','STARGARD':'zachodniopomorskie',
-  'POZNAŃ':'wielkopolskie','KALISZ':'wielkopolskie','KONIN':'wielkopolskie','GNIEZNO':'wielkopolskie','LESZNO':'wielkopolskie','PIŁA':'wielkopolskie',
-  'WARSZAWA':'mazowieckie','RADOM':'mazowieckie','PŁOCK':'mazowieckie','SIEDLCE':'mazowieckie','PRUSZKÓW':'mazowieckie','LEGIONOWO':'mazowieckie',
-  'KRAKÓW':'małopolskie','TARNÓW':'małopolskie','NOWY SĄCZ':'małopolskie','ZAKOPANE':'małopolskie','OŚWIĘCIM':'małopolskie',
-  'WROCŁAW':'dolnośląskie','LEGNICA':'dolnośląskie','WAŁBRZYCH':'dolnośląskie','JELENIA GÓRA':'dolnośląskie','LUBIN':'dolnośląskie',
-  'KATOWICE':'śląskie','GLIWICE':'śląskie','ZABRZE':'śląskie','BYTOM':'śląskie','SOSNOWIEC':'śląskie','BIELSKO':'śląskie','CZĘSTOCHOWA':'śląskie','RYBNIK':'śląskie','TYCHY':'śląskie','DĄBROWA':'śląskie',
-  'ŁÓDŹ':'łódzkie','PIOTRKÓW':'łódzkie','SKIERNIEWICE':'łódzkie','TOMASZÓW':'łódzkie',
-  'LUBLIN':'lubelskie','ZAMOŚĆ':'lubelskie','CHEŁM':'lubelskie','BIAŁA PODLASKA':'lubelskie','PUŁAWY':'lubelskie',
-  'BIAŁYSTOK':'podlaskie','SUWAŁKI':'podlaskie','ŁOMŻA':'podlaskie','AUGUSTÓW':'podlaskie',
-  'RZESZÓW':'podkarpackie','PRZEMYŚL':'podkarpackie','KROSNO':'podkarpackie','TARNOBRZEG':'podkarpackie','STALOWA':'podkarpackie',
-  'KIELCE':'świętokrzyskie','OSTROWIEC':'świętokrzyskie','STARACHOWICE':'świętokrzyskie','SKARŻYSKO':'świętokrzyskie',
-  'OLSZTYN':'warmińsko-mazurskie','ELBLĄG':'warmińsko-mazurskie','EŁK':'warmińsko-mazurskie','GIŻYCKO':'warmińsko-mazurskie',
-  'BYDGOSZCZ':'kujawsko-pomorskie','TORUŃ':'kujawsko-pomorskie','WŁOCŁAWEK':'kujawsko-pomorskie','GRUDZIĄDZ':'kujawsko-pomorskie','INOWROCŁAW':'kujawsko-pomorskie',
-  'ZIELONA GÓRA':'lubuskie','GORZÓW':'lubuskie','ŻARY':'lubuskie',
-  'OPOLE':'opolskie','NYSA':'opolskie','KĘDZIERZYN':'opolskie',
-};
+// ================================================
+// SEKCJA 7: ALERTY
+// ================================================
 
-function getVoiv(adresat){
-  const u=(adresat||'').toUpperCase();
-  for(const[c,v]of Object.entries(VOIV)){if(u.includes(c))return v;}
-  const pc=u.match(/(\d{2})-(\d{3})/);
-  if(pc){
-    const p=parseInt(pc[1]);
-    if(p<=19)return'mazowieckie';if(p<=26)return'łódzkie';if(p<=34)return'małopolskie';
-    if(p<=39)return'podkarpackie';if(p<=42)return'łódzkie';if(p<=44)return'śląskie';
-    if(p<=48)return'śląskie';if(p<=58)return'dolnośląskie';if(p<=59)return'dolnośląskie';
-    if(p<=63)return'wielkopolskie';if(p<=68)return'lubuskie';if(p<=78)return'zachodniopomorskie';
-    if(p<=84)return'pomorskie';if(p<=87)return'kujawsko-pomorskie';if(p<=89)return'warmińsko-mazurskie';
-  }
-  return'inne';
-}
-
-function renderCities(){
-  const cityMap={},voivMap={};
-  recs.forEach(r=>{
-    const a=r.adresat||'';
-    const m=a.match(/\d{2}-\d{3}\s+([A-ZŁŚŻŹĆĄĘÓŃ][A-ZŁŚŻŹĆĄĘÓŃa-złśżźćąęóń\s-]+)/);
-    if(m){const c=m[1].trim().split(/\s+/).slice(0,2).join(' ');if(c.length>2)cityMap[c]=(cityMap[c]||0)+1;}
-    const v=getVoiv(a);voivMap[v]=(voivMap[v]||0)+1;
-  });
-  allCities=Object.entries(cityMap).sort((a,b)=>b[1]-a[1]);
-  renderCityList(allCities);
-  // Voivodeships
-  const vs=Object.entries(voivMap).sort((a,b)=>b[1]-a[1]);
-  const maxV=vs[0]?vs[0][1]:1;
-  const cols=['#4f7aff','#22c55e','#f59e0b','#ef4444','#7c5cfc','#06b6d4','#f97316','#ec4899','#84cc16','#14b8a6','#a855f7','#6366f1','#d97706','#65a30d','#0891b2','#dc2626'];
-  document.getElementById('voiv-list').innerHTML=vs.map(([v,c],i)=>`
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
-      <div style="font-size:12px;min-width:170px;color:var(--text)">${v}</div>
-      <div style="height:16px;background:${cols[i%cols.length]};border-radius:3px;opacity:.85;width:${Math.max((c/maxV)*140,4)}px;flex-shrink:0"></div>
-      <div style="font-size:12px;font-weight:600;color:var(--muted)">${c.toLocaleString('pl')}</div>
-    </div>`).join('');
-  document.getElementById('voiv-pct').innerHTML=vs.map(([v,c],i)=>`
-    <div style="display:flex;justify-content:space-between;padding:5px 10px;background:var(--surface2);border-radius:6px;margin-bottom:5px;border-left:3px solid ${cols[i%cols.length]}">
-      <span style="font-size:12px">${v}</span>
-      <span style="font-size:12px;font-weight:600;color:${cols[i%cols.length]}">${((c/recs.length)*100).toFixed(1)}%</span>
-    </div>`).join('');
-}
-
-function renderCityList(cities){
-  const max=cities[0]?cities[0][1]:1;
-  document.getElementById('citycount').textContent=`${cities.length} miejscowości`;
-  document.getElementById('citylist').innerHTML=cities.slice(0,120).map(([c,n])=>`
-    <div class="city-card">
-      <div>
-        <div style="font-size:13px">${esc(c)}</div>
-        <div style="height:3px;background:var(--accent);border-radius:2px;margin-top:4px;width:${Math.max((n/max)*100,5)}%"></div>
-      </div>
-      <div style="font-size:13px;font-weight:700;color:var(--accent)">${n.toLocaleString('pl')}</div>
-    </div>`).join('');
-}
-function filterCities(){
-  const q=document.getElementById('cityq').value.toLowerCase();
-  renderCityList(q?allCities.filter(([c])=>c.toLowerCase().includes(q)):allCities);
-}
-
-// ALERTS
 function renderAlerts(){
   const alerts=[];
   const dupCnt=new Set(dups.map(r=>r.numer)).size;
@@ -815,154 +739,16 @@ function renderAlerts(){
     '<div class="empty">✅ Brak alertów — wszystko wygląda dobrze!</div>';
 }
 
-// DUPLICATES
-function renderDupTable(src){
-  const data=src||dups;
-  const u=new Set(data.map(r=>r.numer)).size;
-  document.getElementById('dcount').textContent=`${u} zduplikowanych numerów (${data.length} rekordów)`;
-  if(!data.length){document.getElementById('dtable').innerHTML='<div class="empty">Brak duplikatów 🎉</div>';return;}
-  const rows=data.slice(0,300).map(r=>`<tr>
-    <td><span class="pill pill-red">${esc(r.arkusz.slice(0,18))}</span></td>
-    <td>${tlink(r.numer,'tlink-red')}</td>
-    <td class="truncate">${esc(r.tytul)}</td>
-    <td class="truncate">${esc(r.adresat)}</td>
-    <td style="white-space:nowrap">${esc(r.data)}</td>
-  </tr>`).join('');
-  document.getElementById('dtable').innerHTML=`<table><thead><tr><th>Arkusz</th><th>Numer</th><th>Tytuł</th><th>Adresat</th><th>Data</th></tr></thead><tbody>${rows}</tbody></table>`;
-}
-function filterDups(){
-  const q=document.getElementById('dq').value.toLowerCase();
-  renderDupTable(q?dups.filter(r=>r.numer.includes(q)||r.adresat.toLowerCase().includes(q)||r.tytul.toLowerCase().includes(q)||r.arkusz.toLowerCase().includes(q)):null);
-}
 
-// EXPORT
-function exportArr(data,name){
-  if(!data.length){toast('Brak danych','var(--yellow)');return;}
-  const ws=XLSX.utils.json_to_sheet(data.map(r=>({'Arkusz':r.arkusz,'Numer':r.numer,'Tytuł':r.tytul,'Adresat':r.adresat,'Nadawca':r.nadawca,'Klient':r.klient,'Data':r.data,'Status':r.status})));
-  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Dane');
-  XLSX.writeFile(wb,name+'.xlsx');
-  toast('✅ Wyeksportowano '+data.length.toLocaleString('pl')+' rekordów');
-}
-function exportAll(){exportArr(recs,'Poczta_Vestra_'+todayStr());}
-function exportResults(){exportArr(curResults,'Wyniki_'+todayStr());}
-function exportDups(){exportArr(dups,'Duplikaty_'+todayStr());}
+// ================================================
+// SEKCJA 8: SKANOWANIE
+// ================================================
 
-// PDF
-function genPDF(){
-  const months=getByMonth();
-  const bySheet={};recs.forEach(r=>{bySheet[r.arkusz]=(bySheet[r.arkusz]||0)+1;});
-  const dupCnt=new Set(dups.map(r=>r.numer)).size;
-  const best=months.reduce((a,b)=>b[1]>a[1]?b:a,['?',0]);
-  const last2=months.slice(-2);
-  const trend=last2.length===2?Math.round((last2[1][1]-last2[0][1])/last2[0][1]*100):0;
-  const todayN=recs.filter(r=>r.data===todayStr()).length;
-  const today=new Date().toLocaleDateString('pl-PL');
-  const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"><title>Raport Poczty ${today}</title>
-  <style>body{font-family:'Segoe UI',sans-serif;margin:0;padding:40px;color:#111}
-  h1{color:#4f7aff;font-size:22px;margin:0 0 4px}.sub{font-size:13px;color:#888;margin-bottom:24px}
-  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
-  .s{background:#f0f4ff;border-radius:10px;padding:14px;text-align:center}
-  .sv{font-size:26px;font-weight:700;color:#4f7aff}.sl{font-size:11px;color:#888;margin-top:3px;text-transform:uppercase}
-  h2{font-size:15px;border-left:4px solid #4f7aff;padding-left:10px;margin:22px 0 10px}
-  table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px}
-  th{background:#4f7aff;color:#fff;padding:8px 10px;text-align:left}td{padding:7px 10px;border-bottom:1px solid #eee}
-  tr:nth-child(even)td{background:#f8f9ff}
-  .up{color:#16a34a;font-weight:600}.down{color:#dc2626;font-weight:600}
-  .footer{margin-top:36px;padding-top:16px;border-top:1px solid #eee;font-size:11px;color:#aaa;text-align:center}
-  .noprint{margin-bottom:20px}@media print{.noprint{display:none}}
-  </style></head><body>
-  <div class="noprint"><button onclick="window.print()" style="background:#4f7aff;color:#fff;border:none;padding:9px 18px;border-radius:7px;cursor:pointer;font-size:14px">🖨️ Drukuj / Zapisz PDF</button></div>
-  <h1>📮 Raport Poczty Wychodzącej</h1>
-  <div class="sub">Vestra Care, ul. Dworcowa 12, 84-300 Lębork &nbsp;|&nbsp; Świadczenie Wspierające &nbsp;|&nbsp; ${today}</div>
-  <div class="stats">
-    <div class="s"><div class="sv">${recs.length.toLocaleString('pl')}</div><div class="sl">Wszystkich przesyłek</div></div>
-    <div class="s"><div class="sv">${todayN}</div><div class="sl">Dzisiaj</div></div>
-    <div class="s"><div class="sv">${dupCnt}</div><div class="sl">Duplikaty</div></div>
-    <div class="s"><div class="sv ${trend>=0?'up':'down'}">${trend>=0?'▲':'▼'} ${Math.abs(trend)}%</div><div class="sl">Trend m/m</div></div>
-  </div>
-  <h2>Przesyłki miesięcznie</h2>
-  <table><tr><th>Miesiąc</th><th>Liczba</th><th>Zmiana</th></tr>
-  ${months.map(([m,v],i)=>{const pv=i>0?months[i-1][1]:v;const d=v-pv;const p=i>0?Math.round(d/pv*100):0;
-    return`<tr><td>${m}</td><td>${v.toLocaleString('pl')}</td><td>${i>0?`<span class="${d>=0?'up':'down'}">${d>=0?'▲':'▼'} ${Math.abs(p)}%</span>`:'-'}</td></tr>`;}).join('')}
-  </table>
-  <h2>Arkusze</h2>
-  <table><tr><th>Arkusz</th><th>Liczba przesyłek</th></tr>
-  ${Object.entries(bySheet).sort((a,b)=>b[1]-a[1]).map(([n,v])=>`<tr><td>${n}</td><td>${v.toLocaleString('pl')}</td></tr>`).join('')}
-  </table>
-  <div class="footer">Raport wygenerowany automatycznie | Vestra Care Poczta PRO | ${today}</div>
-  </body></html>`);
-  w.document.close();
-}
-
-// TABS
-function showTab(n,el){
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('panel-'+n).classList.add('active');el.classList.add('active');
-  if(n==='today'&&!document.getElementById('tdate').value){document.getElementById('tdate').value=todayStr();loadToday();}
-  if(n==='scan')initScanForm();
-}
-
-// AGENT AI
-function buildCtx(){
-  const bs={},bm={};
-  recs.forEach(r=>{bs[r.arkusz]=(bs[r.arkusz]||0)+1;const m=r.data?r.data.slice(0,7):null;if(m)bm[m]=(bm[m]||0)+1;});
-  const dupCnt=new Set(dups.map(r=>r.numer)).size;
-  const months=Object.entries(bm).sort((a,b)=>a[0].localeCompare(b[0]));
-  const best=months.reduce((a,b)=>b[1]>a[1]?b:a,['?',0]);
-  const sample=recs.slice(0,30).map(r=>`${r.arkusz}|${r.numer}|${r.tytul}|${r.adresat}|${r.data}`).join('\n');
-  agentCtx=`Jesteś agentem AI firmy Vestra Care (ul. Dworcowa 12, 84-300 Lębork) obsługującej Świadczenie Wspierające.
-DANE: ${recs.length.toLocaleString('pl')} rekordów | Duplikaty: ${dupCnt} | Najaktywniejszy: ${best[0]} (${best[1].toLocaleString('pl')})
-ARKUSZE: ${Object.entries(bs).map(([k,v])=>`${k}:${v}`).join(' | ')}
-MIESIĄCE: ${months.map(([m,v])=>`${m}:${v}`).join(' | ')}
-PRZYKŁADY:\n${sample}
-Możesz: analizować dane, pisać pisma urzędowe, generować raporty, wykrywać anomalie. Odpowiadaj PO POLSKU.`;
-  document.getElementById('wmsg').innerHTML=`Cześć! Załadowałem <strong>${recs.length.toLocaleString('pl')} rekordów</strong> z ${Object.keys(bs).length} arkuszy. Jak mogę pomóc?`;
-}
-
-async function sendChat(){
-  const inp=document.getElementById('ci');const msg=inp.value.trim();if(!msg)return;
-  inp.value='';addMsg('u',msg);
-  document.getElementById('sw').style.display='none';
-  document.getElementById('sbtn').disabled=true;
-  const tid=addTyping();
-  chatH.push({role:'user',parts:[{text:msg}]});
-  try{
-    const key=localStorage.getItem('gemini_key')||'';
-    if(!key){removeTyping(tid);addMsg('a','⚠️ Najpierw dodaj klucz API — kliknij 🔑 w nagłówku.');document.getElementById('sbtn').disabled=false;return;}
-    GEM_URL_CURRENT='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+key;
-    const res=await fetch(GEM_URL_CURRENT,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({system_instruction:{parts:[{text:agentCtx}]},contents:chatH,generationConfig:{maxOutputTokens:2048,temperature:0.7}})});
-    const d=await res.json();
-    if(d.error)throw new Error(d.error.message);
-    const reply=d.candidates?.[0]?.content?.parts?.[0]?.text||'Brak odpowiedzi.';
-    removeTyping(tid);addMsg('a',reply);chatH.push({role:'model',parts:[{text:reply}]});
-  }catch(e){removeTyping(tid);addMsg('a','❌ Błąd: '+e.message);}
-  document.getElementById('sbtn').disabled=false;
-}
-function addMsg(r,t){
-  const c=document.getElementById('cmsgs');const d=document.createElement('div');
-  const u=r==='u';d.className=u?'mu':'ma';
-  d.innerHTML=`<div class="ml2">${u?'👤 Ty':'🤖 Agent AI'}</div><div class="${u?'bu':'ba'}">${t.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^- (.*)$/gm,'<div style="padding-left:10px">• $1</div>').replace(/^### (.*)$/gm,'<div style="font-size:15px;font-weight:600;margin:6px 0 3px">$1</div>')}</div>`;
-  c.appendChild(d);c.scrollTop=c.scrollHeight;
-}
-function addTyping(){
-  const c=document.getElementById('cmsgs');const id='t'+Date.now();const d=document.createElement('div');
-  d.className='ma';d.id=id;d.innerHTML='<div class="ml2">🤖 Agent AI</div><div class="ba"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>';
-  c.appendChild(d);c.scrollTop=c.scrollHeight;return id;
-}
-function removeTyping(id){document.getElementById(id)?.remove();}
-function sendSugg(el){document.getElementById('ci').value=el.textContent;sendChat();}
-
-// SCAN
 let scanHistory=[];
 
 function initScanForm(){
   const sheets=[...new Set(recs.map(r=>r.arkusz))];
   document.getElementById('scan-arkusz').innerHTML=sheets.map(s=>`<option>${s}</option>`).join('');
-  const titles=[...new Set(recs.map(r=>r.tytul).filter(Boolean))].sort();
-  document.getElementById('scan-tytul').innerHTML=titles.map(t=>`<option>${esc(t)}</option>`).join('');
   document.getElementById('scan-data').value=todayStr();
   initAutocomplete();
 }
@@ -977,6 +763,7 @@ function initAutocomplete(){
   fill('dl-adresat',unique('adresat'));
   fill('dl-nadawca',unique('nadawca'));
   fill('dl-klient',unique('klient'));
+  fill('dl-tytul',unique('tytul'));
 }
 
 function checkDuplicate(){
@@ -1013,7 +800,7 @@ async function addRecord(){
   status.style.color='var(--yellow)';
 
   try{
-    const nadawca=document.getElementById('scan-nadawca').value.trim()||'VESTRA CARE UL. DWORCOWA 12; 84-300 LĘBORK';
+    const nadawca=document.getElementById('scan-nadawca').value.trim();
     const payload={
       numer, arkusz, tytul, adresat, nadawca, klient,
       data: data || todayStr()
@@ -1079,7 +866,7 @@ function renderScanHistory(){
 }
 
 function clearScanForm(){
-  ['scan-numer','scan-adresat','scan-nadawca','scan-klient'].forEach(id=>document.getElementById(id).value='');
+  ['scan-numer','scan-tytul','scan-adresat','scan-nadawca','scan-klient'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('scan-data').value=todayStr();
   document.getElementById('dup-warning').style.display='none';
   document.getElementById('ok-sign').style.display='none';
@@ -1087,15 +874,379 @@ function clearScanForm(){
   document.getElementById('scan-numer').focus();
 }
 
+let serialScans=[];      // [{numer}] - lista zeskanowanych numerów (krok 1)
+
+let serialRows=[];       // [{numer,arkusz,tytul,adresat,nadawca,klient,data}] - dane do zapisu (krok 2)
+
+let serialScanning=false;
+
+let currentSerialStep=1;
+
+function switchScanMode(mode){
+  document.getElementById('single-scan-mode').style.display=mode==='single'?'block':'none';
+  document.getElementById('serial-scan-mode').style.display=mode==='serial'?'block':'none';
+  document.getElementById('mode-single-btn').className=mode==='single'?'btn':'btn sec';
+  document.getElementById('mode-serial-btn').className=mode==='serial'?'btn':'btn sec';
+  if(mode==='serial'){
+    showSerialStep(currentSerialStep);
+    if(currentSerialStep===1&&serialScanning)document.getElementById('serial-input').focus();
+  }
+}
+
+function showSerialStep(n){
+  currentSerialStep=n;
+  document.getElementById('serial-step1').style.display=n===1?'block':'none';
+  document.getElementById('serial-step2').style.display=n===2?'block':'none';
+  document.getElementById('serial-step3').style.display=n===3?'block':'none';
+}
+
+function getSheetsList(){return[...new Set(recs.map(r=>r.arkusz))];}
+
+function getTitlesList(){return[...new Set(recs.map(r=>r.tytul).filter(Boolean))].sort();}
+
+function startSerialScan(){
+  serialScanning=true;
+  document.getElementById('serial-start-btn').style.display='none';
+  document.getElementById('serial-finish-btn').style.display='inline-block';
+  const inp=document.getElementById('serial-input');
+  inp.style.display='block';inp.value='';inp.focus();
+  document.getElementById('serial-list').style.display='block';
+  renderSerialList();
+  updateSerialCount();
+}
+
+function addSerialScan(){
+  const inp=document.getElementById('serial-input');
+  const numer=inp.value.trim();
+  inp.value='';
+  if(!numer||numer.length<5){toast('Kod zbyt krótki lub pusty','var(--yellow)');inp.focus();return;}
+  if(serialScans.some(s=>s.numer===numer)){
+    toast('⚠️ Ten numer jest już na liście skanu!','var(--yellow)');
+    inp.focus();return;
+  }
+  serialScans.push({numer});
+  renderSerialList();
+  updateSerialCount();
+  inp.focus();
+}
+
+function removeSerialScan(i){
+  serialScans.splice(i,1);
+  renderSerialList();
+  updateSerialCount();
+}
+
+function updateSerialCount(){
+  document.getElementById('serial-count').textContent=serialScans.length;
+}
+
+function renderSerialList(){
+  const wrap=document.getElementById('serial-list');
+  if(!serialScans.length){wrap.innerHTML='<div class="empty">Jeszcze nic nie zeskanowano</div>';return;}
+  const rows=serialScans.map((s,i)=>{
+    const existsInDb=recs.some(r=>r.numer===s.numer);
+    return`<tr>
+      <td style="width:36px;color:var(--muted)">${i+1}</td>
+      <td style="font-family:monospace">${esc(s.numer)}</td>
+      <td>${existsInDb?'<span class="pill pill-red">⚠️ Już w bazie</span>':'<span class="pill pill-green">✅ Nowy</span>'}</td>
+      <td style="text-align:right"><button class="btn sec" style="padding:4px 10px;font-size:12px" onclick="removeSerialScan(${i})">✕ Usuń</button></td>
+    </tr>`;
+  }).join('');
+  wrap.innerHTML=`<table><thead><tr><th>#</th><th>Numer</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function finishSerialScan(){
+  if(!serialScans.length){toast('Nie zeskanowano żadnego kodu','var(--yellow)');return;}
+  serialScanning=false;
+  buildSerialRows();
+  showSerialStep(2);
+}
+
+function buildSerialRows(){
+  // zachowaj już wpisane dane dla numerów, które są nadal na liście (np. po powrocie do kroku 1)
+  const prevMap={};
+  serialRows.forEach(r=>prevMap[r.numer]=r);
+  serialRows=serialScans.map(s=>prevMap[s.numer]||{
+    numer:s.numer,arkusz:'',tytul:'',adresat:'',nadawca:'',klient:'',data:todayStr()
+  });
+  renderSerialTable();
+}
+
+function renderSerialTable(){
+  const sheets=getSheetsList();
+  const tbody=document.getElementById('serial-tbody');
+  tbody.innerHTML=serialRows.map((r,i)=>{
+    const isDup=recs.some(x=>x.numer===r.numer);
+    return`<tr style="${isDup?'background:rgba(239,68,68,.08)':''}">
+      <td style="font-family:monospace;font-size:12px;white-space:nowrap">${esc(r.numer)}${isDup?'<br><span class="pill pill-red" style="margin-top:4px">⚠️ Duplikat</span>':''}</td>
+      <td><select class="si" style="min-width:150px" onchange="updSerialRow(${i},'arkusz',this.value)">
+        <option value="">— wybierz —</option>
+        ${sheets.map(s=>`<option ${r.arkusz===s?'selected':''}>${esc(s)}</option>`).join('')}
+      </select></td>
+      <td><input type="text" class="si" style="min-width:170px" value="${esc(r.tytul)}" list="dl-tytul" placeholder="Tytuł pisma..." oninput="updSerialRow(${i},'tytul',this.value)"></td>
+      <td><input type="text" class="si" style="min-width:180px" value="${esc(r.adresat)}" list="dl-adresat" oninput="updSerialRow(${i},'adresat',this.value)"></td>
+      <td><input type="text" class="si" style="min-width:180px" value="${esc(r.nadawca)}" list="dl-nadawca" placeholder="Wpisz lub wybierz..." oninput="updSerialRow(${i},'nadawca',this.value)"></td>
+      <td><input type="text" class="si" style="min-width:140px" value="${esc(r.klient)}" list="dl-klient" oninput="updSerialRow(${i},'klient',this.value)"></td>
+      <td><input type="date" class="si" value="${esc(r.data)}" onchange="updSerialRow(${i},'data',this.value)"></td>
+      <td>${i>0?`<button class="btn sec" style="padding:4px 8px;font-size:11px;white-space:nowrap" onclick="copyFromAbove(${i})">⬆️ Kopiuj wyżej</button>`:''}</td>
+    </tr>`;
+  }).join('');
+  updateSerialDupInfo();
+}
+
+function updSerialRow(i,field,val){serialRows[i][field]=val;}
+
+function copyFromAbove(i){
+  if(i<1)return;
+  const prev=serialRows[i-1];
+  serialRows[i]={...serialRows[i],arkusz:prev.arkusz,tytul:prev.tytul,adresat:prev.adresat,nadawca:prev.nadawca,klient:prev.klient,data:prev.data};
+  renderSerialTable();
+}
+
+function applyToAll(){
+  if(!serialRows.length)return;
+  const base=serialRows[0];
+  serialRows=serialRows.map(r=>({...r,arkusz:base.arkusz,tytul:base.tytul,adresat:base.adresat,nadawca:base.nadawca,klient:base.klient,data:base.data}));
+  renderSerialTable();
+  toast('✅ Zastosowano dane z wiersza 1 do wszystkich');
+}
+
+function updateSerialDupInfo(){
+  const dupCount=serialRows.filter(r=>recs.some(x=>x.numer===r.numer)).length;
+  document.getElementById('serial-dup-info').textContent=dupCount?`⚠️ ${dupCount} numer(ów) już istnieje w bazie — zostaną pominięte przy zapisie`:'';
+}
+
+function backToStep1(){showSerialStep(1);}
+
+function cancelSerialBatch(){
+  if(!confirm('Na pewno chcesz anulować i wyczyścić całe skanowanie seryjne?'))return;
+  resetSerialAll();
+}
+
+function resetSerialAll(){
+  serialScans=[];serialRows=[];serialScanning=false;
+  document.getElementById('serial-start-btn').style.display='inline-block';
+  document.getElementById('serial-finish-btn').style.display='none';
+  document.getElementById('serial-input').style.display='none';
+  document.getElementById('serial-input').value='';
+  document.getElementById('serial-list').innerHTML='';
+  document.getElementById('serial-list').style.display='none';
+  document.getElementById('serial-summary').innerHTML='';
+  showSerialStep(1);
+}
+
+async function saveSerialBatch(){
+  const toSend=[];
+  let skippedDup=0,skippedInvalid=0;
+  serialRows.forEach(r=>{
+    if(recs.some(x=>x.numer===r.numer)){skippedDup++;return;}
+    if(!r.arkusz||!r.adresat){skippedInvalid++;return;}
+    toSend.push(r);
+  });
+  if(!toSend.length){
+    toast('Brak rekordów do zapisania — sprawdź arkusz i adresata w każdym wierszu','var(--red)');
+    return;
+  }
+  showSerialStep(3);
+  const total=toSend.length;
+  let done=0,added=0,errors=0;
+  const pb=document.getElementById('serial-pb');
+  const ptxt=document.getElementById('serial-progress-text');
+  pb.style.width='0%';
+  // Zapis SEKWENCYJNY (jeden po drugim), żeby uniknąć konfliktów zapisu w Google Sheets
+  for(const r of toSend){
+    ptxt.textContent=`Zapisywanie ${done+1}/${total}: ${r.numer}`;
+    try{
+      const params=new URLSearchParams();
+      params.append('action','add');
+      params.append('numer',r.numer);
+      params.append('arkusz',r.arkusz);
+      params.append('tytul',r.tytul||'');
+      params.append('adresat',r.adresat||'');
+      params.append('klient',r.klient||'');
+      params.append('data',r.data||'');
+      params.append('nadawca',r.nadawca||'');
+      const res=await fetch(API+'?'+params.toString());
+      const result=await res.json();
+      if(result.success){
+        recs.push({arkusz:r.arkusz,numer:r.numer,tytul:r.tytul,adresat:r.adresat,nadawca:r.nadawca,klient:r.klient,data:r.data,status:'ŚLEDŹ PRZESYŁKĘ'});
+        scanHistory.unshift({numer:r.numer,arkusz:r.arkusz,tytul:r.tytul,adresat:r.adresat,klient:r.klient,data:r.data});
+        added++;
+      }else{
+        errors++;
+      }
+    }catch(e){errors++;}
+    done++;
+    pb.style.width=Math.round(done/total*100)+'%';
+  }
+  ptxt.textContent=`Zakończono: ${done}/${total}`;
+  renderScanHistory();
+  initAutocomplete();
+  document.getElementById('serial-summary').innerHTML=`
+    <div class="info-box g">
+      <strong>✅ Zapisano ${added} z ${total} przesyłek</strong><br>
+      ${skippedDup?`⚠️ Pominięto (duplikaty w bazie): ${skippedDup}<br>`:''}
+      ${skippedInvalid?`⚠️ Pominięto (brak arkusza lub adresata): ${skippedInvalid}<br>`:''}
+      ${errors?`❌ Błędy zapisu (spróbuj ponownie): ${errors}<br>`:''}
+    </div>
+    <button class="btn" onclick="resetSerialAll()">▶️ Rozpocznij nowe skanowanie seryjne</button>`;
+  toast(added?`✅ Dodano ${added} przesyłek`:'❌ Nie udało się dodać żadnej przesyłki','var(--'+(added?'green':'red')+')');
+}
 
 
-// API KEY MANAGEMENT
+// ================================================
+// SEKCJA 9: EKSPORT
+// ================================================
+
+function exportArr(data,name){
+  if(!data.length){toast('Brak danych','var(--yellow)');return;}
+  const ws=XLSX.utils.json_to_sheet(data.map(r=>({'Arkusz':r.arkusz,'Numer':r.numer,'Tytuł':r.tytul,'Adresat':r.adresat,'Nadawca':r.nadawca,'Klient':r.klient,'Data':r.data,'Status':r.status})));
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Dane');
+  XLSX.writeFile(wb,name+'.xlsx');
+  toast('✅ Wyeksportowano '+data.length.toLocaleString('pl')+' rekordów');
+}
+
+function exportAll(){exportArr(recs,'Poczta_Vestra_'+todayStr());}
+
+function exportResults(){exportArr(curResults,'Wyniki_'+todayStr());}
+
+
+// ================================================
+// SEKCJA 10: RAPORT PDF
+// ================================================
+
+function genPDF(){
+  const months=getByMonth();
+  const bySheet={};recs.forEach(r=>{bySheet[r.arkusz]=(bySheet[r.arkusz]||0)+1;});
+  const dupCnt=new Set(dups.map(r=>r.numer)).size;
+  const best=months.reduce((a,b)=>b[1]>a[1]?b:a,['?',0]);
+  const last2=months.slice(-2);
+  const trend=last2.length===2?Math.round((last2[1][1]-last2[0][1])/last2[0][1]*100):0;
+  const todayN=recs.filter(r=>r.data===todayStr()).length;
+  const today=new Date().toLocaleDateString('pl-PL');
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"><title>Raport Poczty ${today}</title>
+  <style>body{font-family:'Segoe UI',sans-serif;margin:0;padding:40px;color:#111}
+  h1{color:#4f7aff;font-size:22px;margin:0 0 4px}.sub{font-size:13px;color:#888;margin-bottom:24px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+  .s{background:#f0f4ff;border-radius:10px;padding:14px;text-align:center}
+  .sv{font-size:26px;font-weight:700;color:#4f7aff}.sl{font-size:11px;color:#888;margin-top:3px;text-transform:uppercase}
+  h2{font-size:15px;border-left:4px solid #4f7aff;padding-left:10px;margin:22px 0 10px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px}
+  th{background:#4f7aff;color:#fff;padding:8px 10px;text-align:left}td{padding:7px 10px;border-bottom:1px solid #eee}
+  tr:nth-child(even)td{background:#f8f9ff}
+  .up{color:#16a34a;font-weight:600}.down{color:#dc2626;font-weight:600}
+  .footer{margin-top:36px;padding-top:16px;border-top:1px solid #eee;font-size:11px;color:#aaa;text-align:center}
+  .noprint{margin-bottom:20px}@media print{.noprint{display:none}}
+  </style></head><body>
+  <div class="noprint"><button onclick="window.print()" style="background:#4f7aff;color:#fff;border:none;padding:9px 18px;border-radius:7px;cursor:pointer;font-size:14px">🖨️ Drukuj / Zapisz PDF</button></div>
+  <h1>📮 Raport Poczty Wychodzącej</h1>
+  <div class="sub">Vestra Care, ul. Dworcowa 12, 84-300 Lębork &nbsp;|&nbsp; Świadczenie Wspierające &nbsp;|&nbsp; ${today}</div>
+  <div class="stats">
+    <div class="s"><div class="sv">${recs.length.toLocaleString('pl')}</div><div class="sl">Wszystkich przesyłek</div></div>
+    <div class="s"><div class="sv">${todayN}</div><div class="sl">Dzisiaj</div></div>
+    <div class="s"><div class="sv">${dupCnt}</div><div class="sl">Duplikaty</div></div>
+    <div class="s"><div class="sv ${trend>=0?'up':'down'}">${trend>=0?'▲':'▼'} ${Math.abs(trend)}%</div><div class="sl">Trend m/m</div></div>
+  </div>
+  <h2>Przesyłki miesięcznie</h2>
+  <table><tr><th>Miesiąc</th><th>Liczba</th><th>Zmiana</th></tr>
+  ${months.map(([m,v],i)=>{const pv=i>0?months[i-1][1]:v;const d=v-pv;const p=i>0?Math.round(d/pv*100):0;
+    return`<tr><td>${m}</td><td>${v.toLocaleString('pl')}</td><td>${i>0?`<span class="${d>=0?'up':'down'}">${d>=0?'▲':'▼'} ${Math.abs(p)}%</span>`:'-'}</td></tr>`;}).join('')}
+  </table>
+  <h2>Arkusze</h2>
+  <table><tr><th>Arkusz</th><th>Liczba przesyłek</th></tr>
+  ${Object.entries(bySheet).sort((a,b)=>b[1]-a[1]).map(([n,v])=>`<tr><td>${n}</td><td>${v.toLocaleString('pl')}</td></tr>`).join('')}
+  </table>
+  <div class="footer">Raport wygenerowany automatycznie | Vestra Care Poczta PRO | ${today}</div>
+  </body></html>`);
+  w.document.close();
+}
+
+
+// ================================================
+// SEKCJA 11: NAWIGACJA ZAKŁADEK
+// ================================================
+
+function showTab(n,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+n).classList.add('active');el.classList.add('active');
+  if(n==='today'&&!document.getElementById('tdate').value){document.getElementById('tdate').value=todayStr();loadToday();}
+  if(n==='scan')initScanForm();
+}
+
+
+// ================================================
+// SEKCJA 12: AGENT AI
+// ================================================
+
+function buildCtx(){
+  const bs={},bm={};
+  recs.forEach(r=>{bs[r.arkusz]=(bs[r.arkusz]||0)+1;const m=r.data?r.data.slice(0,7):null;if(m)bm[m]=(bm[m]||0)+1;});
+  const dupCnt=new Set(dups.map(r=>r.numer)).size;
+  const months=Object.entries(bm).sort((a,b)=>a[0].localeCompare(b[0]));
+  const best=months.reduce((a,b)=>b[1]>a[1]?b:a,['?',0]);
+  const sample=recs.slice(0,30).map(r=>`${r.arkusz}|${r.numer}|${r.tytul}|${r.adresat}|${r.data}`).join('\n');
+  agentCtx=`Jesteś agentem AI firmy Vestra Care (ul. Dworcowa 12, 84-300 Lębork) obsługującej Świadczenie Wspierające.
+DANE: ${recs.length.toLocaleString('pl')} rekordów | Duplikaty: ${dupCnt} | Najaktywniejszy: ${best[0]} (${best[1].toLocaleString('pl')})
+ARKUSZE: ${Object.entries(bs).map(([k,v])=>`${k}:${v}`).join(' | ')}
+MIESIĄCE: ${months.map(([m,v])=>`${m}:${v}`).join(' | ')}
+PRZYKŁADY:\n${sample}
+Możesz: analizować dane, pisać pisma urzędowe, generować raporty, wykrywać anomalie. Odpowiadaj PO POLSKU.`;
+  document.getElementById('wmsg').innerHTML=`Cześć! Załadowałem <strong>${recs.length.toLocaleString('pl')} rekordów</strong> z ${Object.keys(bs).length} arkuszy. Jak mogę pomóc?`;
+}
+
+async function sendChat(){
+  const inp=document.getElementById('ci');const msg=inp.value.trim();if(!msg)return;
+  inp.value='';addMsg('u',msg);
+  document.getElementById('sw').style.display='none';
+  document.getElementById('sbtn').disabled=true;
+  const tid=addTyping();
+  chatH.push({role:'user',parts:[{text:msg}]});
+  try{
+    const key=localStorage.getItem('gemini_key')||'';
+    if(!key){removeTyping(tid);addMsg('a','⚠️ Najpierw dodaj klucz API — kliknij 🔑 w nagłówku.');document.getElementById('sbtn').disabled=false;return;}
+    GEM_URL_CURRENT='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+key;
+    const res=await fetch(GEM_URL_CURRENT,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({system_instruction:{parts:[{text:agentCtx}]},contents:chatH,generationConfig:{maxOutputTokens:2048,temperature:0.7}})});
+    const d=await res.json();
+    if(d.error)throw new Error(d.error.message);
+    const reply=d.candidates?.[0]?.content?.parts?.[0]?.text||'Brak odpowiedzi.';
+    removeTyping(tid);addMsg('a',reply);chatH.push({role:'model',parts:[{text:reply}]});
+  }catch(e){removeTyping(tid);addMsg('a','❌ Błąd: '+e.message);}
+  document.getElementById('sbtn').disabled=false;
+}
+
+function addMsg(r,t){
+  const c=document.getElementById('cmsgs');const d=document.createElement('div');
+  const u=r==='u';d.className=u?'mu':'ma';
+  d.innerHTML=`<div class="ml2">${u?'👤 Ty':'🤖 Agent AI'}</div><div class="${u?'bu':'ba'}">${t.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^- (.*)$/gm,'<div style="padding-left:10px">• $1</div>').replace(/^### (.*)$/gm,'<div style="font-size:15px;font-weight:600;margin:6px 0 3px">$1</div>')}</div>`;
+  c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+
+function addTyping(){
+  const c=document.getElementById('cmsgs');const id='t'+Date.now();const d=document.createElement('div');
+  d.className='ma';d.id=id;d.innerHTML='<div class="ml2">🤖 Agent AI</div><div class="ba"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>';
+  c.appendChild(d);c.scrollTop=c.scrollHeight;return id;
+}
+
+function removeTyping(id){document.getElementById(id)?.remove();}
+
+function sendSugg(el){document.getElementById('ci').value=el.textContent;sendChat();}
+
+
+// ================================================
+// SEKCJA 13: KLUCZ API I INICJALIZACJA
+// ================================================
+
 function showKeyDialog(){
   document.getElementById('key-dialog').style.display='flex';
   document.getElementById('gem-key-input').value=localStorage.getItem('gemini_key')||'';
   setTimeout(()=>document.getElementById('gem-key-input').focus(),100);
 }
+
 function closeKeyDialog(){document.getElementById('key-dialog').style.display='none';}
+
 function saveGemKey(){
   const k=document.getElementById('gem-key-input').value.trim();
   if(k){
@@ -1106,80 +1257,9 @@ function saveGemKey(){
   closeKeyDialog();
 }
 
-// START
+// Uruchomienie aplikacji przy starcie
 document.getElementById('tdate').value=todayStr();
 loadData();
-</script>
-<div id="pwa-banner" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#1a1d27,#22263a);border:1px solid #4f7aff;border-radius:12px;padding:14px 20px;z-index:1000;display:flex;align-items:center;gap:14px;box-shadow:0 8px 32px rgba(0,0,0,.4)">
-  <div>
-    <div style="font-size:14px;font-weight:600;color:#e8eaf6">📲 Zainstaluj VestraMail Pro</div>
-    <div style="font-size:12px;color:#7b82a8">Dodaj do pulpitu i używaj jak prawdziwy program</div>
-  </div>
-  <button onclick="installPWA()" style="background:#4f7aff;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">Zainstaluj</button>
-  <button onclick="document.getElementById('pwa-banner').style.display='none'" style="background:transparent;border:none;color:#7b82a8;cursor:pointer;font-size:18px;padding:4px">✕</button>
-</div>
-
-<script>
-// PWA Service Worker
-if('serviceWorker' in navigator) {
-  const swCode = `
-    const CACHE='vestramail-v1';
-    const ASSETS=['/'];
-    self.addEventListener('install', e => {
-      e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
-      self.skipWaiting();
-    });
-    self.addEventListener('activate', e => {
-      e.waitUntil(caches.keys().then(keys => 
-        Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))
-      ));
-      self.clients.claim();
-    });
-    self.addEventListener('fetch', e => {
-      if(e.request.url.includes('script.google.com') || 
-         e.request.url.includes('generativelanguage') ||
-         e.request.url.includes('cdnjs')) {
-        return; // Don't cache external APIs
-      }
-      e.respondWith(
-        caches.match(e.request).then(r => r || fetch(e.request))
-      );
-    });
-  `;
-  const blob = new Blob([swCode], {type:'application/javascript'});
-  const swUrl = URL.createObjectURL(blob);
-  navigator.serviceWorker.register(swUrl).then(() => {
-    console.log('VestraMail PWA: Service Worker registered');
-  }).catch(e => console.log('SW error:', e));
-}
-
-// PWA Install prompt
-let deferredPrompt = null;
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  document.getElementById('pwa-banner').style.display = 'flex';
-});
-
-function installPWA() {
-  if(!deferredPrompt) {
-    alert('Aby zainstalować:\n1. Kliknij ⋮ (trzy kropki) w prawym górnym rogu Chrome\n2. Wybierz "Zainstaluj VestraMail Pro"\n3. Kliknij Zainstaluj');
-    return;
-  }
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(result => {
-    if(result.outcome === 'accepted') {
-      document.getElementById('pwa-banner').style.display = 'none';
-      toast('✅ VestraMail Pro zainstalowany!');
-    }
-    deferredPrompt = null;
-  });
-}
-
-window.addEventListener('appinstalled', () => {
-  document.getElementById('pwa-banner').style.display = 'none';
-  toast('✅ VestraMail Pro zainstalowany na pulpicie!');
-});
 </script>
 </body>
 </html>
